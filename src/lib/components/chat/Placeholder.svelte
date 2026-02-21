@@ -148,7 +148,7 @@
 								</span>
 							</Tooltip>
 						{:else}
-							{$i18n.t('Hello, {{name}}', { name: $user?.name })}
+							{$i18n.t('Let's jam, {{name}} 🎸', { name: $user?.name })}
 						{/if}
 					</div>
 				</div>
@@ -215,7 +215,7 @@
 					{toolServers}
 					{stopResponse}
 					{createMessagePair}
-					placeholder={$i18n.t('How can I help you today?')}
+					placeholder={$i18n.t('What should we work on?')}
 					{onChange}
 					{onUpload}
 					on:submit={(e) => {

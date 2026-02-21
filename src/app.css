@@ -71,7 +71,7 @@ code {
 }
 
 .font-secondary {
-	font-family: 'InstrumentSerif', sans-serif;
+	font-family: 'Space Grotesk', 'InstrumentSerif', sans-serif;
 }
 
 .marked a {
@@ -119,7 +119,7 @@ textarea::placeholder {
 }
 
 .font-primary {
-	font-family: 'Archivo', 'Vazirmatn', sans-serif;
+	font-family: 'DM Sans', 'Archivo', 'Vazirmatn', sans-serif;
 }
 
 .drag-region {

@@ -21,7 +21,24 @@ export default {
 					850: 'var(--color-gray-850, #262626)',
 					900: 'var(--color-gray-900, #171717)',
 					950: 'var(--color-gray-950, #0d0d0d)'
+				},
+				jaco: {
+					red: '#C44536',
+					denim: '#4A6FA5',
+					sunflower: '#D4A843',
+					leather: '#A67C52',
+					cream: '#F5F0E8',
+					'warm-white': '#FAF8F5',
+					charcoal: '#2D2D2D',
+					dusty: '#8B8680',
+					vinyl: '#1A1A1A',
+					sage: '#6B8F71'
 				}
+			},
+			fontFamily: {
+				heading: ['Space Grotesk', 'system-ui', 'sans-serif'],
+				body: ['DM Sans', 'system-ui', 'sans-serif'],
+				mono: ['JetBrains Mono', 'monospace']
 			},
 			typography: {
 				DEFAULT: {
