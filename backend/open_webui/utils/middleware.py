@@ -68,6 +68,11 @@ from open_webui.utils.step_mode import (
     is_advance_request,
     is_full_plan_request,
 )
+from open_webui.utils.topic_classifier import (
+    TopicConfig,
+    classify_topic_shift,
+    compute_running_topic_embedding,
+)
 from open_webui.utils.files import (
     convert_markdown_base64_images,
     get_file_url_from_base64,
@@ -2567,6 +2572,68 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         )
         metadata["step_context"] = step_ctx.to_dict()
 
+    # Jaco topic-tracking: classify topic shift on incoming user message
+    if chat_id and not chat_id.startswith("local:"):
+        try:
+            embedding_function = getattr(
+                getattr(request, "app", None),
+                "state",
+                None,
+            )
+            embedding_function = (
+                embedding_function.EMBEDDING_FUNCTION
+                if embedding_function
+                else None
+            )
+
+            if embedding_function and user_message:
+                new_embedding = await embedding_function(user_message)
+
+                chat_obj = chat_obj if chat_obj else Chats.get_chat_by_id(chat_id)
+                stored_embeddings = (
+                    chat_obj.message_embeddings if chat_obj else None
+                ) or []
+
+                # Count messages in chat
+                messages = form_data.get("messages", [])
+                message_count = len([m for m in messages if m.get("role") == "user"])
+
+                topic_config = TopicConfig()
+                decision = await classify_topic_shift(
+                    new_message=user_message,
+                    new_embedding=new_embedding,
+                    chat_message_embeddings=stored_embeddings,
+                    chat_topic_summary=chat_obj.title if chat_obj else "",
+                    config=topic_config,
+                    message_count=message_count,
+                )
+
+                # Update stored embeddings with new message
+                updated_embeddings = stored_embeddings + [new_embedding]
+                # Keep only last N embeddings (window size)
+                updated_embeddings = updated_embeddings[-topic_config.embedding_window:]
+
+                topic_emb = compute_running_topic_embedding(
+                    updated_embeddings,
+                    decay=topic_config.embedding_decay,
+                    window=topic_config.embedding_window,
+                )
+
+                Chats.update_chat_topic_embedding_by_id(
+                    chat_id,
+                    topic_embedding=topic_emb or [],
+                    message_embeddings=updated_embeddings,
+                )
+
+                metadata["topic_split_decision"] = {
+                    "should_split": decision.should_split,
+                    "new_topic_name": decision.new_topic_name,
+                    "confidence": decision.confidence,
+                    "similarity_score": decision.similarity_score,
+                }
+        except Exception as e:
+            log.warning(f"Topic classification failed (non-blocking): {e}")
+
     return form_data, metadata, events
 
 
@@ -3033,6 +3100,16 @@ async def non_streaming_chat_response_handler(response, ctx):
                                     "url": f"{request.app.state.config.WEBUI_URL}/c/{metadata['chat_id']}",
                                 },
                             )
+
+                    # Jaco topic-tracking: emit topic_shift event if split detected
+                    split_decision = metadata.get("topic_split_decision")
+                    if split_decision and split_decision.get("should_split"):
+                        await event_emitter(
+                            {
+                                "type": "chat:topic_shift",
+                                "data": split_decision,
+                            }
+                        )
 
                     await background_tasks_handler(ctx)
 
@@ -4574,6 +4651,16 @@ async def streaming_chat_response_handler(response, ctx):
                         "data": data,
                     }
                 )
+
+                # Jaco topic-tracking: emit topic_shift event if split detected
+                split_decision = metadata.get("topic_split_decision")
+                if split_decision and split_decision.get("should_split"):
+                    await event_emitter(
+                        {
+                            "type": "chat:topic_shift",
+                            "data": split_decision,
+                        }
+                    )
 
                 await background_tasks_handler(ctx)
             except asyncio.CancelledError:
