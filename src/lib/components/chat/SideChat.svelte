@@ -106,6 +106,15 @@
 			</div>
 		</div>
 
+		<!-- Step context -->
+		{#if stepContent}
+			<div class="px-4 py-2 bg-jaco-sunflower/5 dark:bg-jaco-sunflower/10 border-b border-jaco-leather/10 dark:border-jaco-dusty/15">
+				<div class="text-xs text-jaco-dusty leading-relaxed line-clamp-3" title={stepContent}>
+					{stepContent}
+				</div>
+			</div>
+		{/if}
+
 		<!-- Messages -->
 		<div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
 			{#each messages as msg}

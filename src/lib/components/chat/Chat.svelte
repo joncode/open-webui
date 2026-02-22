@@ -2875,6 +2875,9 @@
 								activeSideChat = null;
 								activeSideChatMessages = [];
 							}}
+							on:close={() => {
+								sideChatOpen = false;
+							}}
 						/>
 					{/if}
 					</div>
