@@ -5,10 +5,11 @@ Provides REST endpoints for creating, messaging, combining, and
 discarding side chats attached to specific steps.
 """
 
+import json
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from open_webui.internal.db import get_session
@@ -25,6 +26,48 @@ from open_webui.utils.side_chat_combiner import generate_combined_step
 log = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def _make_llm_call(request: Request, user):
+    """Create an async llm_call(prompt) -> str from the request context."""
+
+    async def llm_call(prompt: str) -> str:
+        # Lazy imports to avoid pulling heavy deps at module-import time
+        from open_webui.utils.chat import generate_chat_completion
+        from open_webui.utils.task import get_task_model_id
+
+        models = request.app.state.MODELS
+        if not models:
+            raise RuntimeError("No models available")
+
+        default_model_id = next(iter(models))
+        model_id = get_task_model_id(
+            default_model_id,
+            request.app.state.config.TASK_MODEL,
+            request.app.state.config.TASK_MODEL_EXTERNAL,
+            models,
+        )
+
+        payload = {
+            "model": model_id,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False,
+        }
+
+        response = await generate_chat_completion(
+            request, form_data=payload, user=user, bypass_filter=True
+        )
+
+        # Extract text from the response (may be dict or have body_iterator)
+        if hasattr(response, "body_iterator"):
+            async for chunk in response.body_iterator:
+                data = json.loads(chunk.decode("utf-8", "replace"))
+                return data["choices"][0]["message"]["content"]
+            raise RuntimeError("Empty streaming response from LLM")
+        else:
+            return response["choices"][0]["message"]["content"]
+
+    return llm_call
 
 
 ############################
@@ -113,6 +156,7 @@ async def add_message(
 @router.post("/{id}/combine", response_model=Optional[SideChatModel])
 async def combine_side_chat(
     id: str,
+    request: Request,
     user=Depends(get_verified_user),
     db: Session = Depends(get_session),
 ):
@@ -131,9 +175,11 @@ async def combine_side_chat(
     messages = SideChats.get_messages(id, db=db)
     message_dicts = [{"role": m.role, "content": m.content} for m in messages]
 
+    llm_call = _make_llm_call(request, user)
     combined_text = await generate_combined_step(
         original_step_content=side_chat.original_step_content,
         side_chat_messages=message_dicts,
+        llm_call=llm_call,
     )
 
     if combined_text is None:

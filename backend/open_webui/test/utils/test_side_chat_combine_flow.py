@@ -5,6 +5,7 @@ Tests edge cases for the combine endpoint logic, status transitions,
 and the interaction between the combiner, models, and router.
 """
 
+import sys
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -285,3 +286,162 @@ class TestCombinePromptTemplate:
         from open_webui.utils.side_chat_combiner import COMBINE_SYSTEM_PROMPT
 
         assert "concise" in COMBINE_SYSTEM_PROMPT.lower() or "ONLY" in COMBINE_SYSTEM_PROMPT
+
+
+# =========================================================================
+# Tests for _make_llm_call wiring in the router
+# =========================================================================
+
+
+class TestMakeLlmCall:
+    """Tests for the _make_llm_call helper in side_chats router."""
+
+    def test_make_llm_call_returns_callable(self):
+        """_make_llm_call should return an async callable."""
+        from open_webui.routers.side_chats import _make_llm_call
+
+        mock_request = MagicMock()
+        mock_user = MagicMock()
+        result = _make_llm_call(mock_request, mock_user)
+        assert callable(result)
+
+    @staticmethod
+    def _mock_modules(mock_gen):
+        """Create sys.modules patches for heavy deps used by _make_llm_call."""
+        mock_chat = MagicMock()
+        mock_chat.generate_chat_completion = mock_gen
+
+        # get_task_model_id is simple — provide the real logic via a mock module
+        def _get_task_model_id(default_id, task_model, task_model_ext, models):
+            if models.get(default_id, {}).get("connection_type") == "local":
+                return task_model if (task_model and task_model in models) else default_id
+            return task_model_ext if (task_model_ext and task_model_ext in models) else default_id
+
+        mock_task = MagicMock()
+        mock_task.get_task_model_id = _get_task_model_id
+
+        return patch.dict(sys.modules, {
+            "open_webui.utils.chat": mock_chat,
+            "open_webui.utils.task": mock_task,
+        })
+
+    @pytest.mark.asyncio
+    async def test_make_llm_call_uses_task_model(self):
+        """The llm_call should resolve the task model via get_task_model_id."""
+        from open_webui.routers.side_chats import _make_llm_call
+
+        mock_gen = AsyncMock(
+            return_value={"choices": [{"message": {"content": "LLM reply"}}]}
+        )
+
+        mock_request = MagicMock()
+        mock_request.app.state.MODELS = {"model-a": {"id": "model-a"}}
+        mock_request.app.state.config.TASK_MODEL = ""
+        mock_request.app.state.config.TASK_MODEL_EXTERNAL = ""
+        mock_user = MagicMock()
+
+        with self._mock_modules(mock_gen):
+            llm_call = _make_llm_call(mock_request, mock_user)
+            result = await llm_call("test prompt")
+
+        assert result == "LLM reply"
+        call_payload = mock_gen.call_args[1].get("form_data") or mock_gen.call_args[0][1]
+        assert call_payload["model"] == "model-a"
+        assert call_payload["stream"] is False
+
+    @pytest.mark.asyncio
+    async def test_make_llm_call_no_models_raises(self):
+        """Should raise RuntimeError when no models are available."""
+        from open_webui.routers.side_chats import _make_llm_call
+
+        mock_gen = AsyncMock()
+
+        mock_request = MagicMock()
+        mock_request.app.state.MODELS = {}
+        mock_user = MagicMock()
+
+        with self._mock_modules(mock_gen):
+            llm_call = _make_llm_call(mock_request, mock_user)
+            with pytest.raises(RuntimeError, match="No models available"):
+                await llm_call("test prompt")
+
+    @pytest.mark.asyncio
+    async def test_make_llm_call_bypasses_filter(self):
+        """Internal combine calls should bypass access filters."""
+        from open_webui.routers.side_chats import _make_llm_call
+
+        mock_gen = AsyncMock(
+            return_value={"choices": [{"message": {"content": "ok"}}]}
+        )
+
+        mock_request = MagicMock()
+        mock_request.app.state.MODELS = {"m1": {"id": "m1"}}
+        mock_request.app.state.config.TASK_MODEL = ""
+        mock_request.app.state.config.TASK_MODEL_EXTERNAL = ""
+        mock_user = MagicMock()
+
+        with self._mock_modules(mock_gen):
+            llm_call = _make_llm_call(mock_request, mock_user)
+            await llm_call("prompt")
+
+        _, kwargs = mock_gen.call_args
+        assert kwargs.get("bypass_filter") is True
+
+
+# =========================================================================
+# Tests for single-message and unicode edge cases
+# =========================================================================
+
+
+class TestCombinerUnicodeAndSingleMessage:
+    """Edge cases for unicode content and minimal conversations."""
+
+    @pytest.mark.asyncio
+    async def test_single_user_message_only(self):
+        """Combine should work with just one user message (no assistant reply)."""
+        from open_webui.utils.side_chat_combiner import generate_combined_step
+
+        mock_llm = AsyncMock(return_value="Updated step")
+        result = await generate_combined_step(
+            original_step_content="Configure database",
+            side_chat_messages=[
+                {"role": "user", "content": "Should I use PostgreSQL instead of SQLite?"},
+            ],
+            llm_call=mock_llm,
+        )
+        assert result == "Updated step"
+        prompt = mock_llm.call_args[0][0]
+        assert "PostgreSQL" in prompt
+
+    @pytest.mark.asyncio
+    async def test_unicode_content_preserved(self):
+        """Unicode in step content and messages should pass through correctly."""
+        from open_webui.utils.side_chat_combiner import generate_combined_step
+
+        mock_llm = AsyncMock(return_value="Paso revisado")
+        await generate_combined_step(
+            original_step_content="Configurar el servidor",
+            side_chat_messages=[
+                {"role": "user", "content": "Usar nginx o apache?"},
+            ],
+            llm_call=mock_llm,
+        )
+        prompt = mock_llm.call_args[0][0]
+        assert "Configurar el servidor" in prompt
+        assert "nginx o apache" in prompt
+
+    @pytest.mark.asyncio
+    async def test_emoji_content_preserved(self):
+        """Emoji characters in messages should be preserved in prompt."""
+        from open_webui.utils.side_chat_combiner import generate_combined_step
+
+        mock_llm = AsyncMock(return_value="result")
+        await generate_combined_step(
+            original_step_content="Deploy the app",
+            side_chat_messages=[
+                {"role": "user", "content": "Should we add health checks? \U0001f3e5"},
+            ],
+            llm_call=mock_llm,
+        )
+        prompt = mock_llm.call_args[0][0]
+        assert "\U0001f3e5" in prompt
