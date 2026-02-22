@@ -58,6 +58,16 @@ from open_webui.routers.pipelines import (
 from open_webui.routers.memories import query_memory, QueryMemoryForm
 
 from open_webui.utils.webhook import post_webhook
+from open_webui.utils.step_mode import (
+    StepContext,
+    inject_step_system_prompt,
+    extract_step_metadata,
+    strip_step_metadata,
+    detect_multi_step_leak,
+    split_first_step,
+    is_advance_request,
+    is_full_plan_request,
+)
 from open_webui.utils.files import (
     convert_markdown_base64_images,
     get_file_url_from_base64,
@@ -2545,6 +2555,18 @@ async def process_chat_payload(request, form_data, user, metadata, model):
             }
         )
 
+    # Jaco step-mode: inject step system prompt into messages
+    chat_id = metadata.get("chat_id")
+    if chat_id:
+        chat_obj = Chats.get_chat_by_id(chat_id)
+        step_ctx = StepContext.from_dict(
+            chat_obj.step_context if chat_obj else None
+        )
+        form_data["messages"] = inject_step_system_prompt(
+            form_data.get("messages", []), step_ctx
+        )
+        metadata["step_context"] = step_ctx.to_dict()
+
     return form_data, metadata, events
 
 
@@ -2917,6 +2939,39 @@ async def non_streaming_chat_response_handler(response, ctx):
                 content = response_data["choices"][0]["message"]["content"]
 
                 if content:
+                    # Jaco step-mode: process response for step splitting
+                    step_ctx = StepContext.from_dict(
+                        metadata.get("step_context")
+                    )
+                    if step_ctx.step_mode_enabled:
+                        step_meta = extract_step_metadata(content)
+                        content = strip_step_metadata(content)
+
+                        if step_meta:
+                            step_ctx.active_plan = True
+                            step_ctx.current_step = step_meta.get("current", 1)
+                            step_ctx.total_steps_estimated = step_meta.get(
+                                "total_estimated", 0
+                            )
+                            step_ctx.plan_summary = step_meta.get(
+                                "plan_summary", ""
+                            )
+
+                        if detect_multi_step_leak(content):
+                            first_step, remaining = split_first_step(content)
+                            step_ctx.full_plan_cache = remaining
+                            if not step_ctx.active_plan:
+                                step_ctx.active_plan = True
+                                step_ctx.current_step = 1
+                            content = first_step
+
+                        # Persist updated step context
+                        Chats.update_chat_step_context_by_id(
+                            metadata["chat_id"], step_ctx.to_dict()
+                        )
+                        # Update response_data with processed content
+                        response_data["choices"][0]["message"]["content"] = content
+
                     await event_emitter(
                         {
                             "type": "chat:completion",
@@ -4428,6 +4483,48 @@ async def streaming_chat_response_handler(response, ctx):
                 for item in output:
                     if item.get("status") == "in_progress":
                         item["status"] = "completed"
+
+                # Jaco step-mode: process streamed content for step splitting
+                step_ctx = StepContext.from_dict(
+                    metadata.get("step_context")
+                )
+                if step_ctx.step_mode_enabled and content:
+                    step_meta = extract_step_metadata(content)
+                    content = strip_step_metadata(content)
+
+                    if step_meta:
+                        step_ctx.active_plan = True
+                        step_ctx.current_step = step_meta.get("current", 1)
+                        step_ctx.total_steps_estimated = step_meta.get(
+                            "total_estimated", 0
+                        )
+                        step_ctx.plan_summary = step_meta.get(
+                            "plan_summary", ""
+                        )
+
+                    if detect_multi_step_leak(content):
+                        first_step, remaining = split_first_step(content)
+                        step_ctx.full_plan_cache = remaining
+                        if not step_ctx.active_plan:
+                            step_ctx.active_plan = True
+                            step_ctx.current_step = 1
+                        content = first_step
+                        # Rebuild output with just the first step
+                        output = [
+                            {
+                                "type": "message",
+                                "id": output_id("msg"),
+                                "status": "completed",
+                                "role": "assistant",
+                                "content": [
+                                    {"type": "output_text", "text": content}
+                                ],
+                            }
+                        ]
+
+                    Chats.update_chat_step_context_by_id(
+                        metadata["chat_id"], step_ctx.to_dict()
+                    )
 
                 title = Chats.get_chat_title_by_id(metadata["chat_id"])
                 data = {

@@ -52,6 +52,11 @@ class Chat(Base):
     meta = Column(JSON, server_default="{}")
     folder_id = Column(Text, nullable=True)
 
+    # Jaco step-mode fields
+    step_context = Column(JSON, nullable=True)
+    parent_chat_id = Column(String, nullable=True)
+    split_summary = Column(Text, nullable=True)
+
     __table_args__ = (
         # Performance indexes for common queries
         # WHERE folder_id = ...
@@ -84,6 +89,11 @@ class ChatModel(BaseModel):
 
     meta: dict = {}
     folder_id: Optional[str] = None
+
+    # Jaco step-mode fields
+    step_context: Optional[dict] = None
+    parent_chat_id: Optional[str] = None
+    split_summary: Optional[str] = None
 
 
 class ChatFile(Base):
@@ -160,6 +170,9 @@ class ChatResponse(BaseModel):
     pinned: Optional[bool] = False
     meta: dict = {}
     folder_id: Optional[str] = None
+    step_context: Optional[dict] = None
+    parent_chat_id: Optional[str] = None
+    split_summary: Optional[str] = None
 
 
 class ChatTitleIdResponse(BaseModel):
@@ -1632,6 +1645,35 @@ class ChatTable:
             )
 
             return [ChatModel.model_validate(chat) for chat in all_chats]
+
+
+    def update_chat_step_context_by_id(
+        self, id: str, step_context: dict, db: Optional[Session] = None
+    ) -> Optional[ChatModel]:
+        try:
+            with get_db_context(db) as db:
+                chat = db.get(Chat, id)
+                if chat is None:
+                    return None
+                chat.step_context = step_context
+                chat.updated_at = int(time.time())
+                db.commit()
+                db.refresh(chat)
+                return ChatModel.model_validate(chat)
+        except Exception:
+            return None
+
+    def get_chat_step_context_by_id(
+        self, id: str, db: Optional[Session] = None
+    ) -> Optional[dict]:
+        try:
+            with get_db_context(db) as db:
+                chat = db.get(Chat, id)
+                if chat is None:
+                    return None
+                return chat.step_context
+        except Exception:
+            return None
 
 
 Chats = ChatTable()
