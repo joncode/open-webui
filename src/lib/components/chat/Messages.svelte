@@ -47,6 +47,7 @@
 	export let showMessage: Function = () => {};
 	export let submitMessage: Function = () => {};
 	export let addMessages: Function = () => {};
+	export let openSideChat: Function = () => {};
 
 	export let readOnly = false;
 	export let editCodeBlock = true;
@@ -459,6 +460,7 @@
 								{mergeResponses}
 								{addMessages}
 								{triggerScroll}
+								{openSideChat}
 								{readOnly}
 								{editCodeBlock}
 								{topPadding}

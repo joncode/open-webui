@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+	import { fly } from 'svelte/transition';
 
 	export let oldTopic: string = '';
 	export let newTopic: string = '';
@@ -10,6 +11,7 @@
 	let progress = 100;
 	let intervalId: ReturnType<typeof setInterval>;
 	let visible = true;
+	let dismissText = '';
 
 	onMount(() => {
 		const tickMs = 50;
@@ -36,13 +38,18 @@
 	}
 
 	function confirmSplit() {
-		visible = false;
-		dispatch('confirmSplit');
+		clearInterval(intervalId);
+		dismissText = 'Alright, splitting it up…';
+		setTimeout(() => {
+			visible = false;
+			dispatch('confirmSplit');
+		}, 1200);
 	}
 </script>
 
 {#if visible}
 	<div
+		transition:fly={{ y: -20, duration: 250 }}
 		class="relative overflow-hidden rounded-xl border border-jaco-sunflower/40
 			   bg-gradient-to-r from-jaco-sunflower/10 to-jaco-cream
 			   dark:from-jaco-sunflower/5 dark:to-jaco-vinyl/50
@@ -50,28 +57,35 @@
 	>
 		<!-- Progress bar countdown -->
 		<div
-			class="absolute bottom-0 left-0 h-1 bg-jaco-sunflower/60 transition-all duration-50 ease-linear"
+			class="absolute bottom-0 left-0 h-1 bg-jaco-sunflower transition-all duration-50 ease-linear"
 			style="width: {progress}%"
 		/>
 
-		<div class="flex items-center justify-between gap-4">
-			<div class="flex items-center gap-2 text-sm">
+		{#if dismissText}
+			<div class="flex items-center gap-2 text-sm text-jaco-charcoal dark:text-jaco-cream">
 				<span>🎸</span>
-				<span class="text-jaco-charcoal dark:text-jaco-cream">
-					Jaco's about to split
-					<strong class="text-jaco-red">{newTopic}</strong>
-					out of
-					<strong>{oldTopic}</strong>
-				</span>
+				<span class="font-medium">{dismissText}</span>
 			</div>
+		{:else}
+			<div class="flex items-center justify-between gap-4">
+				<div class="flex items-center gap-2 text-sm">
+					<span>🎸</span>
+					<span class="text-jaco-charcoal dark:text-jaco-cream">
+						Jaco's about to split
+						<strong class="text-jaco-red">{newTopic}</strong>
+						out of
+						<strong>{oldTopic}</strong>
+					</span>
+				</div>
 
-			<button
-				on:click={cancelSplit}
-				class="text-jaco-red font-semibold text-sm whitespace-nowrap
-					   hover:underline underline-offset-2 transition-colors"
-			>
-				Don't do it, Jaco →
-			</button>
-		</div>
+				<button
+					on:click={cancelSplit}
+					class="text-jaco-red font-semibold text-sm whitespace-nowrap
+						   hover:underline underline-offset-2 transition-colors"
+				>
+					Don't do it, Jaco →
+				</button>
+			</div>
+		{/if}
 	</div>
 {/if}

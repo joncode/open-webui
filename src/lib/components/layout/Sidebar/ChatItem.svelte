@@ -50,6 +50,7 @@
 	export let id;
 	export let title;
 	export let createdAt: number | null = null;
+	export let highlight = false;
 
 	export let selected = false;
 	export let shiftKey = false;
@@ -57,22 +58,42 @@
 	export let onDragEnd = () => {};
 
 	function formatTimeAgo(timestamp: number): string {
-		const now = Date.now();
-		const diff = now - timestamp * 1000; // timestamp is in seconds
+		const now = new Date();
+		const date = new Date(timestamp * 1000); // timestamp is in seconds
+		const diff = now.getTime() - date.getTime();
 
-		const seconds = Math.floor(diff / 1000);
-		const minutes = Math.floor(seconds / 60);
-		const hours = Math.floor(minutes / 60);
-		const days = Math.floor(hours / 24);
-		const weeks = Math.floor(days / 7);
-		const years = Math.floor(days / 365);
+		const minutes = Math.floor(diff / 60000);
+		const hours = Math.floor(diff / 3600000);
 
-		if (years > 0) return `${years}y`;
-		if (weeks > 0) return `${weeks}w`;
-		if (days > 0) return `${days}d`;
-		if (hours > 0) return `${hours}h`;
-		if (minutes > 0) return `${minutes}m`;
-		return '1m';
+		// Today: relative time
+		if (date.toDateString() === now.toDateString()) {
+			if (minutes < 1) return '1m ago';
+			if (minutes < 60) return `${minutes}m ago`;
+			return `${hours}h ago`;
+		}
+
+		// Yesterday
+		const yesterday = new Date(now);
+		yesterday.setDate(yesterday.getDate() - 1);
+		if (date.toDateString() === yesterday.toDateString()) {
+			return 'Yesterday';
+		}
+
+		// This week: day name
+		const daysDiff = Math.floor(diff / 86400000);
+		if (daysDiff < 7) {
+			return date.toLocaleDateString('en-US', { weekday: 'short' });
+		}
+
+		// Different year
+		if (date.getFullYear() !== now.getFullYear()) {
+			const month = date.toLocaleDateString('en-US', { month: 'short' });
+			const year = String(date.getFullYear()).slice(-2);
+			return `${month} '${year}`;
+		}
+
+		// Same year: "Feb 5"
+		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 	}
 
 	let chat = null;
@@ -369,7 +390,7 @@
 <div
 	id="sidebar-chat-group"
 	bind:this={itemElement}
-	class=" w-full {className} relative group"
+	class=" w-full {className} relative group {highlight ? 'jaco-split-glow' : ''}"
 	draggable={draggable && !confirmEdit}
 >
 	{#if confirmEdit}
@@ -459,8 +480,8 @@
 			</div>
 
 			<!-- Time ago indicator -->
-			{#if createdAt && !mouseOver}
-				<div class="shrink-0 self-center text-[10px] text-gray-400 dark:text-gray-500 pl-2">
+			{#if createdAt}
+				<div class="shrink-0 self-center text-[10px] text-jaco-dusty dark:text-jaco-dusty/70 pl-2">
 					{formatTimeAgo(createdAt)}
 				</div>
 			{/if}
@@ -604,3 +625,18 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	:global(.jaco-split-glow) {
+		animation: splitGlow 2s ease-out;
+	}
+
+	@keyframes splitGlow {
+		0% {
+			box-shadow: 0 0 8px #D4A843;
+		}
+		100% {
+			box-shadow: none;
+		}
+	}
+</style>

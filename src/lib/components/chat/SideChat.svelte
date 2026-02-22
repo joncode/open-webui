@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, tick } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import Spinner from '$lib/components/common/Spinner.svelte';
 
 	export let stepNumber: number = 1;
 	export let stepContent: string = '';
@@ -10,19 +12,25 @@
 
 	let inputText = '';
 	let isStreaming = false;
+	let combineLoading = false;
+	let discardLoading = false;
+	let messagesEndElement: HTMLDivElement;
 
 	function handleSend() {
 		if (!inputText.trim() || isStreaming) return;
 
 		dispatch('sendMessage', { content: inputText.trim() });
 		inputText = '';
+		scrollToBottom();
 	}
 
-	function handleCombine() {
+	async function handleCombine() {
+		combineLoading = true;
 		dispatch('combine');
 	}
 
-	function handleDiscard() {
+	async function handleDiscard() {
+		discardLoading = true;
 		dispatch('discard');
 	}
 
@@ -32,32 +40,67 @@
 			handleSend();
 		}
 	}
+
+	function handleClose() {
+		dispatch('close');
+	}
+
+	async function scrollToBottom() {
+		await tick();
+		if (messagesEndElement) {
+			messagesEndElement.scrollIntoView({ behavior: 'smooth' });
+		}
+	}
+
+	$: if (messages.length) {
+		scrollToBottom();
+	}
 </script>
 
 {#if isOpen}
 	<div
-		class="w-80 border-l-2 border-jaco-sunflower bg-jaco-cream/50
+		transition:fly={{ x: 320, duration: 250 }}
+		class="w-80 shrink-0 border-l-2 border-jaco-sunflower bg-jaco-cream/50
 			   dark:bg-jaco-vinyl/80 dark:border-jaco-sunflower/40
 			   flex flex-col h-full overflow-hidden"
 	>
 		<!-- Header -->
 		<div class="px-4 py-3 border-b border-jaco-leather/15 dark:border-jaco-dusty/20">
-			<div class="font-heading font-semibold text-sm text-jaco-leather dark:text-jaco-sunflower">
-				Side Chat: Step {stepNumber}
+			<div class="flex items-center justify-between">
+				<div class="font-heading font-semibold text-sm text-jaco-leather dark:text-jaco-sunflower">
+					Side Chat: Step {stepNumber}
+				</div>
+				<button
+					on:click={handleClose}
+					class="p-1 text-jaco-dusty hover:text-jaco-charcoal dark:hover:text-jaco-cream transition-colors rounded"
+					aria-label="Close side chat"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+					</svg>
+				</button>
 			</div>
 			<div class="flex gap-2 mt-2">
 				<button
 					on:click={handleCombine}
+					disabled={combineLoading || discardLoading}
 					class="px-3 py-1 bg-jaco-red text-jaco-cream rounded-full text-xs font-semibold
-						   hover:bg-jaco-red/90 transition-colors"
+						   hover:bg-jaco-red/90 transition-colors disabled:opacity-50 flex items-center gap-1"
 				>
+					{#if combineLoading}
+						<Spinner className="size-3" />
+					{/if}
 					Combine ↩
 				</button>
 				<button
 					on:click={handleDiscard}
+					disabled={combineLoading || discardLoading}
 					class="px-3 py-1 text-jaco-dusty hover:text-jaco-charcoal
-						   dark:hover:text-jaco-cream text-xs transition-colors"
+						   dark:hover:text-jaco-cream text-xs transition-colors disabled:opacity-50 flex items-center gap-1"
 				>
+					{#if discardLoading}
+						<Spinner className="size-3" />
+					{/if}
 					Discard
 				</button>
 			</div>
@@ -77,6 +120,7 @@
 					</div>
 				</div>
 			{/each}
+			<div bind:this={messagesEndElement} />
 		</div>
 
 		<!-- Input -->

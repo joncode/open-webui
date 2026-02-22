@@ -39,6 +39,7 @@
 	import ChatCheck from '../icons/ChatCheck.svelte';
 	import Knobs from '../icons/Knobs.svelte';
 	import { WEBUI_API_BASE_URL } from '$lib/constants';
+	import { updateChatById } from '$lib/apis/chats';
 
 	const i18n = getContext('i18n');
 
@@ -59,6 +60,16 @@
 
 	let showShareChatModal = false;
 	let showDownloadChatModal = false;
+
+	$: stepModeEnabled = chat?.chat?.step_mode ?? false;
+
+	async function toggleStepMode() {
+		if (!chat?.id) return;
+		stepModeEnabled = !stepModeEnabled;
+		await updateChatById(localStorage.token, chat.id, {
+			chat: { ...chat.chat, step_mode: stepModeEnabled }
+		});
+	}
 </script>
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
@@ -208,6 +219,22 @@
 								</div>
 							</button>
 						</Menu>
+					{/if}
+
+					{#if chat?.id}
+						<Tooltip content={stepModeEnabled ? $i18n.t('Step mode on') : $i18n.t('Step mode off')}>
+							<button
+								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition {stepModeEnabled ? 'text-jaco-sunflower' : ''}"
+								on:click={toggleStepMode}
+								aria-label="Toggle step mode"
+							>
+								<div class="m-auto self-center">
+									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+										<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+									</svg>
+								</div>
+							</button>
+						</Tooltip>
 					{/if}
 
 					{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}

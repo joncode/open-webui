@@ -97,6 +97,15 @@
 	import Tooltip from '../common/Tooltip.svelte';
 	import Sidebar from '../icons/Sidebar.svelte';
 	import Image from '../common/Image.svelte';
+	import TopicSplitAlert from '$lib/components/chat/TopicSplitAlert.svelte';
+	import SideChat from '$lib/components/chat/SideChat.svelte';
+	import {
+		createSideChat,
+		getSideChatsByChatId,
+		addSideChatMessage,
+		combineSideChat,
+		deleteSideChat
+	} from '$lib/apis/side-chats';
 
 	export let chatIdProp = '';
 
@@ -162,6 +171,16 @@
 
 	// Message queue for storing messages while generating
 	let messageQueue: { id: string; prompt: string; files: any[] }[] = [];
+
+	// Topic split state
+	let splitAlert: { oldTopic: string; newTopic: string } | null = null;
+
+	// Side chat state
+	let sideChatOpen = false;
+	let activeSideChat: any = null;
+	let activeSideChatMessages: Array<{ role: string; content: string }> = [];
+	let activeSideChatStepNumber = 1;
+	let activeSideChatStepContent = '';
 
 	$: if (chatIdProp) {
 		navigateHandler();
@@ -504,6 +523,13 @@
 					eventConfirmationMessage = data.message;
 					eventConfirmationInputPlaceholder = data.placeholder;
 					eventConfirmationInputValue = data?.value ?? '';
+				} else if (type === 'chat:step_metadata') {
+					message.step_metadata = data;
+				} else if (type === 'chat:topic_shift') {
+					splitAlert = {
+						oldTopic: $chatTitle ?? chat?.title ?? '',
+						newTopic: data?.new_topic_name ?? 'New topic'
+					};
 				} else {
 					console.log('Unknown message type', data);
 				}
@@ -2615,7 +2641,26 @@
 						}}
 					/>
 
-					<div class="flex flex-col flex-auto z-10 w-full @container overflow-auto">
+					<div class="flex flex-row flex-auto z-10 w-full @container overflow-auto">
+					<div class="flex flex-col flex-auto min-w-0">
+						{#if splitAlert}
+							<div class="px-4 pt-3">
+								<TopicSplitAlert
+									oldTopic={splitAlert.oldTopic}
+									newTopic={splitAlert.newTopic}
+									on:cancelSplit={() => {
+										splitAlert = null;
+									}}
+									on:confirmSplit={async () => {
+										splitAlert = null;
+										// Refresh sidebar after split
+										currentChatPage.set(1);
+										await chats.set(await getChatList(localStorage.token, $currentChatPage));
+									}}
+								/>
+							</div>
+						{/if}
+
 						{#if ($settings?.landingPageMode === 'chat' && !$selectedFolder) || createMessagesList(history, history.currentId).length > 0}
 							<div
 								class=" pb-2.5 flex flex-col justify-between w-full flex-auto overflow-auto h-0 max-w-full z-10 scrollbar-hidden"
@@ -2646,6 +2691,25 @@
 										{mergeResponses}
 										{chatActionHandler}
 										{addMessages}
+										openSideChat={async (detail) => {
+											const { stepNumber, content } = detail;
+											activeSideChatStepNumber = stepNumber;
+											activeSideChatStepContent = content;
+											activeSideChatMessages = [];
+
+											try {
+												const sc = await createSideChat(localStorage.token, {
+													chat_id: $chatId,
+													step_number: stepNumber,
+													original_step_content: content
+												});
+												activeSideChat = sc;
+											} catch (err) {
+												console.error('Failed to create side chat:', err);
+											}
+
+											sideChatOpen = true;
+										}}
 										topPadding={true}
 										bottomPadding={files.length > 0}
 										{onSelect}
@@ -2759,6 +2823,60 @@
 								/>
 							</div>
 						{/if}
+					</div>
+
+					<!-- Side Chat Panel -->
+					{#if sideChatOpen}
+						<SideChat
+							stepNumber={activeSideChatStepNumber}
+							stepContent={activeSideChatStepContent}
+							messages={activeSideChatMessages}
+							isOpen={sideChatOpen}
+							on:sendMessage={async (e) => {
+								const { content } = e.detail;
+								if (!activeSideChat?.id) return;
+
+								activeSideChatMessages = [...activeSideChatMessages, { role: 'user', content }];
+
+								try {
+									const res = await addSideChatMessage(localStorage.token, activeSideChat.id, {
+										role: 'user',
+										content
+									});
+									if (res?.assistant_message) {
+										activeSideChatMessages = [
+											...activeSideChatMessages,
+											{ role: 'assistant', content: res.assistant_message.content }
+										];
+									}
+								} catch (err) {
+									console.error('Side chat message failed:', err);
+								}
+							}}
+							on:combine={async () => {
+								if (!activeSideChat?.id) return;
+								try {
+									await combineSideChat(localStorage.token, activeSideChat.id);
+									sideChatOpen = false;
+									activeSideChat = null;
+									activeSideChatMessages = [];
+								} catch (err) {
+									console.error('Side chat combine failed:', err);
+								}
+							}}
+							on:discard={async () => {
+								if (!activeSideChat?.id) return;
+								try {
+									await deleteSideChat(localStorage.token, activeSideChat.id);
+								} catch (err) {
+									console.error('Side chat delete failed:', err);
+								}
+								sideChatOpen = false;
+								activeSideChat = null;
+								activeSideChatMessages = [];
+							}}
+						/>
+					{/if}
 					</div>
 				</Pane>
 

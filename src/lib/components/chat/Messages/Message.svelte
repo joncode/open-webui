@@ -40,6 +40,7 @@
 
 	export let addMessages;
 	export let triggerScroll;
+	export let openSideChat: Function = () => {};
 	export let readOnly = false;
 	export let editCodeBlock = true;
 	export let topPadding = false;
@@ -98,6 +99,7 @@
 				{readOnly}
 				{editCodeBlock}
 				{topPadding}
+				on:openSideChat={(e) => openSideChat(e.detail)}
 			/>
 		{:else}
 			{#key messageId}

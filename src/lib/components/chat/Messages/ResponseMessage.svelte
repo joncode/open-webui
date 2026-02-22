@@ -62,6 +62,7 @@
 	import RegenerateMenu from './ResponseMessage/RegenerateMenu.svelte';
 	import StatusHistory from './ResponseMessage/StatusHistory.svelte';
 	import FullHeightIframe from '$lib/components/common/FullHeightIframe.svelte';
+	import StepControls from '$lib/components/chat/StepControls.svelte';
 
 	interface MessageType {
 		id: string;
@@ -1420,10 +1421,70 @@
 											</button>
 										</Tooltip>
 									{/each}
+
+									<!-- Side chat button -->
+									{#if message.done && message.step_metadata}
+										<Tooltip content="Side Chat" placement="bottom">
+											<button
+												type="button"
+												aria-label="Side Chat"
+												class="{isLastMessage || ($settings?.highContrastMode ?? false)
+													? 'visible'
+													: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
+												on:click={() => {
+													dispatch('openSideChat', {
+														stepNumber: message.step_metadata.step_number,
+														content: message.content
+													});
+												}}
+											>
+												<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+													<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+												</svg>
+											</button>
+										</Tooltip>
+									{/if}
 								{/if}
 							{/if}
 						{/if}
 					</div>
+
+					<!-- Step Controls -->
+					{#if message.done && message.step_metadata}
+						<StepControls
+							chatId={chatId}
+							currentStep={message.step_metadata.step_number}
+							totalSteps={message.step_metadata.total_steps}
+							planSummary={message.step_metadata.plan_summary ?? ''}
+							on:nextStep
+							on:showAllSteps
+						/>
+					{/if}
+
+					<!-- Updated badge + side chat history -->
+					{#if message.sideChatUpdated}
+						<div class="mt-2 flex items-center gap-2">
+							<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-jaco-sunflower/20 text-jaco-sunflower border border-jaco-sunflower/30">
+								Updated
+							</span>
+						</div>
+
+						{#if message.sideChatHistory && message.sideChatHistory.length > 0}
+							<details class="mt-2 text-sm">
+								<summary class="cursor-pointer text-jaco-dusty hover:text-jaco-charcoal dark:hover:text-jaco-cream transition-colors">
+									Side chat history ({message.sideChatHistory.length} messages)
+								</summary>
+								<div class="mt-2 ml-2 space-y-2 border-l-2 border-jaco-sunflower/30 pl-3">
+									{#each message.sideChatHistory as msg}
+										<div class="text-xs">
+											<span class="font-semibold text-jaco-dusty">{msg.role}:</span>
+											<span class="text-gray-600 dark:text-gray-400">{msg.content}</span>
+										</div>
+									{/each}
+								</div>
+							</details>
+						{/if}
+					{/if}
 
 					{#if message.done && showRateComment}
 						<RateComment
