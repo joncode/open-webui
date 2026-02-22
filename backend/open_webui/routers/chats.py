@@ -35,6 +35,7 @@ from pydantic import BaseModel
 
 from open_webui.utils.auth import get_admin_user, get_verified_user
 from open_webui.utils.access_control import has_permission
+from open_webui.utils.step_mode import StepContext, get_next_step, get_all_steps
 
 log = logging.getLogger(__name__)
 
@@ -1538,3 +1539,58 @@ async def delete_all_tags_by_id(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail=ERROR_MESSAGES.NOT_FOUND
         )
+
+
+############################
+# NextStep
+############################
+
+
+@router.post("/{id}/next-step")
+async def next_step(
+    id: str, user=Depends(get_verified_user), db: Session = Depends(get_session)
+):
+    chat = Chats.get_chat_by_id_and_user_id(id, user.id, db=db)
+    if not chat:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
+        )
+
+    step_ctx = StepContext.from_dict(chat.step_context)
+    result = get_next_step(step_ctx)
+
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No active plan or no remaining steps",
+        )
+
+    Chats.update_chat_step_context_by_id(id, result["step_context"], db=db)
+    return result
+
+
+############################
+# ShowAllSteps
+############################
+
+
+@router.get("/{id}/all-steps")
+async def show_all_steps(
+    id: str, user=Depends(get_verified_user), db: Session = Depends(get_session)
+):
+    chat = Chats.get_chat_by_id_and_user_id(id, user.id, db=db)
+    if not chat:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
+        )
+
+    step_ctx = StepContext.from_dict(chat.step_context)
+    result = get_all_steps(step_ctx)
+
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No active plan",
+        )
+
+    return result

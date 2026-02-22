@@ -199,3 +199,46 @@ def inject_step_system_prompt(
         messages.insert(0, {"role": "system", "content": system_addition})
 
     return messages
+
+
+def get_next_step(step_context: StepContext) -> Optional[dict]:
+    """
+    Advance to the next step in the plan.
+
+    Returns a dict with 'content' (the next step text) and 'step_context'
+    (updated context dict), or None if no plan is active or no steps remain.
+    """
+    if not step_context.active_plan:
+        return None
+
+    if not step_context.full_plan_cache:
+        return None
+
+    first_step, remaining = split_first_step(step_context.full_plan_cache)
+    step_context.current_step += 1
+    step_context.full_plan_cache = remaining if remaining else None
+
+    if not step_context.full_plan_cache:
+        step_context.active_plan = False
+
+    return {
+        "content": first_step,
+        "step_context": step_context.to_dict(),
+    }
+
+
+def get_all_steps(step_context: StepContext) -> Optional[dict]:
+    """
+    Return the full plan with all remaining steps.
+
+    Returns a dict with plan metadata, or None if no plan is active.
+    """
+    if not step_context.active_plan:
+        return None
+
+    return {
+        "plan_summary": step_context.plan_summary,
+        "full_plan": step_context.full_plan_cache or "",
+        "current_step": step_context.current_step,
+        "total_steps_estimated": step_context.total_steps_estimated,
+    }
