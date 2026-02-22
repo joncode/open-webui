@@ -57,6 +57,10 @@ class Chat(Base):
     parent_chat_id = Column(String, nullable=True)
     split_summary = Column(Text, nullable=True)
 
+    # Jaco topic-tracking fields
+    topic_embedding = Column(JSON, nullable=True)
+    message_embeddings = Column(JSON, nullable=True)
+
     __table_args__ = (
         # Performance indexes for common queries
         # WHERE folder_id = ...
@@ -94,6 +98,10 @@ class ChatModel(BaseModel):
     step_context: Optional[dict] = None
     parent_chat_id: Optional[str] = None
     split_summary: Optional[str] = None
+
+    # Jaco topic-tracking fields
+    topic_embedding: Optional[list] = None
+    message_embeddings: Optional[list] = None
 
 
 class ChatFile(Base):
@@ -173,6 +181,8 @@ class ChatResponse(BaseModel):
     step_context: Optional[dict] = None
     parent_chat_id: Optional[str] = None
     split_summary: Optional[str] = None
+    topic_embedding: Optional[list] = None
+    message_embeddings: Optional[list] = None
 
 
 class ChatTitleIdResponse(BaseModel):
@@ -1672,6 +1682,42 @@ class ChatTable:
                 if chat is None:
                     return None
                 return chat.step_context
+        except Exception:
+            return None
+
+    def update_chat_topic_embedding_by_id(
+        self,
+        id: str,
+        topic_embedding: list,
+        message_embeddings: list,
+        db: Optional[Session] = None,
+    ) -> Optional[ChatModel]:
+        try:
+            with get_db_context(db) as db:
+                chat = db.get(Chat, id)
+                if chat is None:
+                    return None
+                chat.topic_embedding = topic_embedding
+                chat.message_embeddings = message_embeddings
+                chat.updated_at = int(time.time())
+                db.commit()
+                db.refresh(chat)
+                return ChatModel.model_validate(chat)
+        except Exception:
+            return None
+
+    def get_chat_topic_data_by_id(
+        self, id: str, db: Optional[Session] = None
+    ) -> Optional[dict]:
+        try:
+            with get_db_context(db) as db:
+                chat = db.get(Chat, id)
+                if chat is None:
+                    return None
+                return {
+                    "topic_embedding": chat.topic_embedding,
+                    "message_embeddings": chat.message_embeddings,
+                }
         except Exception:
             return None
 
