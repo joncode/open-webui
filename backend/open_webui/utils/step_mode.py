@@ -73,9 +73,9 @@ class StepContext:
 
 # Pattern to detect multi-step responses from the LLM
 MULTI_STEP_PATTERNS = [
-    # Numbered lists: "1. ... 2. ... 3. ..."
+    # Numbered lists: "1. ... 2. ... 3. ..." (allows content lines between steps)
     re.compile(
-        r"(?:^|\n)\s*(?:step\s+)?(\d+)[.)]\s+.+(?:\n\s*(?:step\s+)?(\d+)[.)]\s+.+){2,}",
+        r"(?:^|\n)\s*(?:step\s+)?\d+[.)]\s+.+(?:[\s\S]*?\n\s*(?:step\s+)?\d+[.)]\s+.+){2,}",
         re.IGNORECASE | re.MULTILINE,
     ),
     # "First, ... Second, ... Third, ..."
