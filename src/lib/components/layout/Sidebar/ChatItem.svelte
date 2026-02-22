@@ -479,9 +479,9 @@
 				</div>
 			</div>
 
-			<!-- Time ago indicator -->
+			<!-- Time ago indicator (hides on hover when menu appears) -->
 			{#if createdAt}
-				<div class="shrink-0 self-center text-[10px] text-jaco-dusty dark:text-jaco-dusty/70 pl-2">
+				<div class="shrink-0 self-center text-[10px] text-jaco-dusty dark:text-jaco-dusty/70 pl-2 group-hover:opacity-0 transition-opacity">
 					{formatTimeAgo(createdAt)}
 				</div>
 			{/if}
