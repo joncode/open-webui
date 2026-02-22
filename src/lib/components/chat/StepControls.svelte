@@ -41,7 +41,14 @@
 {#if totalSteps > 0}
 	<div class="mt-3">
 		<!-- Sunflower progress bar -->
-		<div class="w-full h-1.5 bg-jaco-dusty/20 rounded-full overflow-hidden mb-2">
+		<div
+			class="w-full h-1.5 bg-jaco-dusty/20 rounded-full overflow-hidden mb-2"
+			role="progressbar"
+			aria-valuenow={currentStep}
+			aria-valuemin={1}
+			aria-valuemax={totalSteps}
+			aria-label="Step {currentStep} of {totalSteps}"
+		>
 			<div
 				class="h-full bg-jaco-sunflower rounded-full transition-all duration-300 ease-out"
 				style="width: {progress}%"
