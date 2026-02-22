@@ -54,6 +54,8 @@
 			   bg-gradient-to-r from-jaco-sunflower/10 to-jaco-cream
 			   dark:from-jaco-sunflower/5 dark:to-jaco-vinyl/50
 			   dark:border-jaco-sunflower/20 px-5 py-3.5 mb-4"
+		role="alert"
+		aria-live="polite"
 	>
 		<!-- Progress bar countdown -->
 		<div
