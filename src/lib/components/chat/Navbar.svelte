@@ -61,14 +61,16 @@
 	let showShareChatModal = false;
 	let showDownloadChatModal = false;
 
-	$: stepModeEnabled = chat?.chat?.step_mode ?? false;
+	let stepModeLocal = false;
+	$: stepModeEnabled = chat?.chat?.step_mode ?? stepModeLocal;
 
 	async function toggleStepMode() {
-		if (!chat?.id) return;
-		stepModeEnabled = !stepModeEnabled;
-		await updateChatById(localStorage.token, chat.id, {
-			chat: { ...chat.chat, step_mode: stepModeEnabled }
-		});
+		stepModeLocal = !stepModeEnabled;
+		if (chat?.id) {
+			await updateChatById(localStorage.token, chat.id, {
+				chat: { ...chat.chat, step_mode: stepModeLocal }
+			});
+		}
 	}
 </script>
 

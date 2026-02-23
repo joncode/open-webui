@@ -2567,6 +2567,10 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         step_ctx = StepContext.from_dict(
             chat_obj.step_context if chat_obj else None
         )
+        # Sync step_mode toggle from chat JSON blob into step_context
+        if chat_obj and hasattr(chat_obj, "chat") and isinstance(chat_obj.chat, dict):
+            ui_step_mode = chat_obj.chat.get("step_mode", False)
+            step_ctx.step_mode_enabled = ui_step_mode
         form_data["messages"] = inject_step_system_prompt(
             form_data.get("messages", []), step_ctx
         )
