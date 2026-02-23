@@ -1188,6 +1188,9 @@ ENABLE_SIGNUP = PersistentConfig(
         else os.environ.get("ENABLE_SIGNUP", "True").lower() == "true"
     ),
 )
+# Allow env var to override DB-persisted value when explicitly set
+if "ENABLE_SIGNUP" in os.environ:
+    ENABLE_SIGNUP.value = os.environ["ENABLE_SIGNUP"].lower() == "true"
 
 ENABLE_LOGIN_FORM = PersistentConfig(
     "ENABLE_LOGIN_FORM",
