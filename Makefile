@@ -1,3 +1,40 @@
+# ============================================================
+# Development
+# ============================================================
+
+.PHONY: dev dev-frontend dev-backend test test-frontend test-backend lint
+
+## Start both frontend and backend dev servers
+dev:
+	@make -j2 dev-backend dev-frontend
+
+## Frontend dev server (Vite)
+dev-frontend:
+	npm run dev
+
+## Backend dev server (uvicorn with CORS for local frontend)
+dev-backend:
+	cd backend && CORS_ALLOW_ORIGIN="http://localhost:5173;http://localhost:8080" \
+		python3 -m uvicorn open_webui.main:app --port 8080 --host 0.0.0.0 --reload
+
+## Run all tests
+test: test-frontend test-backend
+
+## Frontend tests (vitest)
+test-frontend:
+	npm run test:frontend
+
+## Backend tests (pytest)
+test-backend:
+	cd backend && python3 -m pytest
+
+## Lint everything
+lint:
+	npm run lint
+
+# ============================================================
+# Docker (production)
+# ============================================================
 
 ifneq ($(shell which docker-compose 2>/dev/null),)
     DOCKER_COMPOSE := docker-compose
