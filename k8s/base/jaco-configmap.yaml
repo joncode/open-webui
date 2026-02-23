@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaco-config
+  namespace: jaco
+data:
+  ENV: "prod"
+  PORT: "8080"
+  DOCKER: "true"
+  WEBUI_NAME: "Jaco"
+
+  # Disable Ollama (using external LLM APIs only)
+  ENABLE_OLLAMA_API: "false"
+
+  # Redis (in-cluster service)
+  REDIS_URL: "redis://redis:6379"
+  WEBSOCKET_MANAGER: "redis"
+  ENABLE_WEBSOCKET_SUPPORT: "true"
+
+  # Domain — replace <YOUR_DOMAIN> with your actual domain
+  WEBUI_URL: "https://<YOUR_DOMAIN>"
+  CORS_ALLOW_ORIGIN: "https://<YOUR_DOMAIN>"
+
+  # Auth
+  ENABLE_SIGNUP: "false"
+  WEBUI_AUTH: "true"
+  WEBUI_SESSION_COOKIE_SECURE: "true"
+  WEBUI_SESSION_COOKIE_SAME_SITE: "lax"
+
+  # Database
+  ENABLE_DB_MIGRATIONS: "true"
+  DATABASE_POOL_SIZE: "10"
+  DATABASE_POOL_MAX_OVERFLOW: "5"
+  DATABASE_POOL_RECYCLE: "3600"
+
+  # Server
+  UVICORN_WORKERS: "1"
+  GLOBAL_LOG_LEVEL: "INFO"
+
+  # Telemetry off
+  ANONYMIZED_TELEMETRY: "false"
+  SCARF_NO_ANALYTICS: "true"
+  DO_NOT_TRACK: "true"
