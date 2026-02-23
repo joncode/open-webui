@@ -849,7 +849,7 @@
 									<img
 										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
 										class=" size-7 object-cover rounded-full"
-										alt={$i18n.t('Open User Profile Menu')}
+										alt=""}
 										aria-label={$i18n.t('Open User Profile Menu')}
 									/>
 
@@ -913,12 +913,6 @@
 				</a>
 
 				<a href="/" class="flex flex-1 px-1.5" on:click={newChatHandler}>
-					<div
-						id="sidebar-webui-name"
-						class=" self-center font-medium text-gray-850 dark:text-white font-primary"
-					>
-						{$WEBUI_NAME}
-					</div>
 				</a>
 				<Tooltip
 					content={$showSidebar ? $i18n.t('Close Sidebar') : $i18n.t('Open Sidebar')}
@@ -1417,7 +1411,7 @@
 									<img
 										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
 										class=" size-7 object-cover rounded-full"
-										alt={$i18n.t('Open User Profile Menu')}
+										alt=""}
 										aria-label={$i18n.t('Open User Profile Menu')}
 									/>
 
