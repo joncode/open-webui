@@ -684,7 +684,7 @@
 
 						<div class="mr-2 ml-1 translate-y-0.5">
 							<Tooltip content={$i18n.t('Cancel')}>
-								<button aria-label="Remove model"
+								<button
 									class="text-gray-800 dark:text-gray-100"
 									aria-label={$i18n.t('Cancel download of {{model}}', { model: model })}
 									on:click={() => {

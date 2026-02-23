@@ -382,8 +382,8 @@
 									</button>
 
 									<Tooltip content={$i18n.t('Create new key')}>
-										<button aria-label="Upload profile image"
-											class=" px-1.5 py-1 dark:hover:bg-gray-850transition rounded-lg"
+										<button
+											class=" px-1.5 py-1 dark:hover:bg-gray-850 transition rounded-lg"
 											aria-label={$i18n.t('Create new key')}
 											on:click={() => {
 												createAPIKeyHandler();
