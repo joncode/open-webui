@@ -148,7 +148,7 @@
 								</span>
 							</Tooltip>
 						{:else}
-							{$i18n.t('Let's jam, {{name}} 🎸', { name: $user?.name })}
+							{$i18n.t("Let's jam, {{name}} 🎸", { name: $user?.name })}
 						{/if}
 					</div>
 				</div>
