@@ -218,8 +218,7 @@
 			bind:value={comment}
 			class="w-full text-sm px-1 py-2 bg-transparent outline-hidden resize-none rounded-xl"
 			placeholder={$i18n.t('Feel free to add specific details')}
-			rows="3"
-		/>
+			rows="3"></textarea>
 	</div>
 
 	<div class="mt-2 gap-1.5 flex justify-between">

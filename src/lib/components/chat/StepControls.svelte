@@ -51,8 +51,7 @@
 		>
 			<div
 				class="h-full bg-jaco-sunflower rounded-full transition-all duration-300 ease-out"
-				style="width: {progress}%"
-			/>
+				style="width: {progress}%"></div>
 		</div>
 
 		<div class="flex items-center gap-3 text-sm">

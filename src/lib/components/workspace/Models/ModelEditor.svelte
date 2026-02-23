@@ -882,8 +882,7 @@
 									rows="10"
 									value={JSON.stringify(info, null, 2)}
 									disabled
-									readonly
-								/>
+									readonly></textarea>
 							</div>
 						{/if}
 					</div>

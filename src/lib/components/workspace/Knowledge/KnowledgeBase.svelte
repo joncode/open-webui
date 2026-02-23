@@ -1108,8 +1108,7 @@
 											class="w-full h-full text-sm outline-none resize-none px-3 py-2"
 											bind:value={selectedFileContent}
 											disabled={!knowledge?.write_access}
-											placeholder={$i18n.t('Add content here')}
-										/>
+											placeholder={$i18n.t('Add content here')}></textarea>
 									{/key}
 								</div>
 							</div>

@@ -129,7 +129,7 @@
 					</div>
 				</div>
 			{/each}
-			<div bind:this={messagesEndElement} />
+			<div bind:this={messagesEndElement}></div>
 		</div>
 
 		<!-- Input -->
@@ -143,8 +143,7 @@
 					class="flex-1 px-3 py-2 text-sm rounded-lg border border-jaco-leather/20
 						   dark:border-jaco-dusty/30 bg-white dark:bg-jaco-vinyl
 						   focus:outline-none focus:border-jaco-denim resize-none
-						   placeholder:text-jaco-dusty"
-				/>
+						   placeholder:text-jaco-dusty"></textarea>
 				<button
 					on:click={handleSend}
 					disabled={!inputText.trim() || isStreaming}

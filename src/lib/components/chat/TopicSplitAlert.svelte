@@ -60,8 +60,7 @@
 		<!-- Progress bar countdown -->
 		<div
 			class="absolute bottom-0 left-0 h-1 bg-jaco-sunflower transition-all duration-50 ease-linear"
-			style="width: {progress}%"
-		/>
+			style="width: {progress}%"></div>
 
 		{#if dismissText}
 			<div class="flex items-center gap-2 text-sm text-jaco-charcoal dark:text-jaco-cream">

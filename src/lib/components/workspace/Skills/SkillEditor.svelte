@@ -236,8 +236,7 @@
 									class="w-full flex-1 text-xs bg-transparent outline-hidden resize-none font-mono px-4 py-3"
 									bind:value={content}
 									placeholder={$i18n.t('Enter skill instructions in markdown...')}
-									required
-								/>
+									required></textarea>
 							{/if}
 						</div>
 					</div>
