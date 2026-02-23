@@ -80,6 +80,7 @@ export const replaceTokens = (content, char, user) => {
 export const sanitizeResponseContent = (content: string) => {
 	return content
 		.replace(/<!--\s*jaco-step:\s*\{.*?\}\s*-->/gs, '')
+		.replace(/\^[\d,]+/g, '')
 		.replace(/<\|[a-z]*$/, '')
 		.replace(/<\|[a-z]+\|$/, '')
 		.replace(/<$/, '')
