@@ -24,8 +24,12 @@ test: test-frontend test-backend
 test-frontend:
 	npm run test:frontend
 
-## Backend tests (pytest)
+## Backend tests (pytest) — Jaco tests only (skips upstream integration tests that need Docker/Redis)
 test-backend:
+	cd backend && python3 -m pytest open_webui/test/utils/
+
+## Backend tests — all (requires Docker, Redis, moto)
+test-backend-all:
 	cd backend && python3 -m pytest
 
 ## Lint everything
