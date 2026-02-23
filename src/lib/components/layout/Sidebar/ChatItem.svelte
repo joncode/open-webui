@@ -602,7 +602,7 @@
 
 				{#if id === $chatId}
 					<!-- Shortcut support using "delete-chat-button" id -->
-					<button
+					<button aria-label="More options"
 						id="delete-chat-button"
 						class="hidden"
 						on:click={() => {

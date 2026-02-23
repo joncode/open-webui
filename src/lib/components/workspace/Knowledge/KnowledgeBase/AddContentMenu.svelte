@@ -32,7 +32,7 @@
 	align="end"
 >
 	<Tooltip content={$i18n.t('Add Content')}>
-		<button
+		<button aria-label="Add content"
 			class=" p-1.5 rounded-xl hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition font-medium text-sm flex items-center space-x-1"
 			on:click={(e) => {
 				e.stopPropagation();

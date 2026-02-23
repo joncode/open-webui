@@ -498,6 +498,7 @@
 									<Tooltip content={$i18n.t('Valves')}>
 										<button
 											class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+											aria-label={$i18n.t('Valves')}
 											type="button"
 											on:click={() => {
 												selectedFunction = func;

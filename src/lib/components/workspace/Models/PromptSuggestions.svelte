@@ -154,12 +154,11 @@
 								class="text-sm w-full bg-transparent outline-hidden resize-none"
 								placeholder={$i18n.t('Prompt')}
 								rows="2"
-								bind:value={prompt.content}
-							/>
+								bind:value={prompt.content}></textarea>
 						</Tooltip>
 					</div>
 
-					<button
+					<button aria-label="Delete suggestion"
 						class="p-1 self-start"
 						type="button"
 						on:click={() => {

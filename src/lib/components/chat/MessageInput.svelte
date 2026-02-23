@@ -1050,7 +1050,7 @@
 						<div
 							class=" absolute -top-12 left-0 right-0 flex justify-center z-30 pointer-events-none"
 						>
-							<button
+							<button aria-label="Commands"
 								class=" bg-white border border-gray-100 dark:border-none dark:bg-white/20 p-1.5 rounded-full pointer-events-auto"
 								on:click={() => {
 									autoScroll = true;
@@ -1133,11 +1133,11 @@
 							dispatch('submit', prompt);
 						}}
 					>
-						<button
+						<button aria-label="Send"
 							id="generate-message-pair-button"
 							class="hidden"
 							on:click={() => createMessagePair(prompt)}
-						/>
+						></button>
 
 						<!-- Queued messages display -->
 						{#if messageQueue.length > 0}
@@ -1545,8 +1545,7 @@
 
 									{#if showWebSearchButton || showImageGenerationButton || showCodeInterpreterButton || showToolsButton || (toggleFilters && toggleFilters.length > 0)}
 										<div
-											class="flex self-center w-[1px] h-4 mx-1 bg-gray-200/50 dark:bg-gray-800/50"
-										/>
+											class="flex self-center w-[1px] h-4 mx-1 bg-gray-200/50 dark:bg-gray-800/50"></div>
 
 										<IntegrationsMenu
 											selectedModels={atSelectedModel ? [atSelectedModel.id] : selectedModels}
@@ -1731,7 +1730,7 @@
 									{#if (taskIds && taskIds.length > 0) || (history.currentId && history.messages[history.currentId]?.done != true) || generating}
 										<div class=" flex items-center">
 											<Tooltip content={$i18n.t('Stop')}>
-												<button
+												<button aria-label="Upload"
 													class="bg-white hover:bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 transition rounded-full p-1.5"
 													on:click={() => {
 														stopResponse();
@@ -1886,7 +1885,7 @@
 										{:else}
 											<div class=" flex items-center">
 												<Tooltip content={$i18n.t('Send message')}>
-													<button
+													<button aria-label="Record voice"
 														id="send-message-button"
 														class="{!(prompt === '' && files.length === 0)
 															? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
@@ -1920,7 +1919,7 @@
 								{@html DOMPurify.sanitize(marked($config?.license_metadata?.input_footer))}
 							</div>
 						{:else}
-							<div class="mb-1" />
+							<div class="mb-1"></div>
 						{/if}
 					</form>
 				</div>

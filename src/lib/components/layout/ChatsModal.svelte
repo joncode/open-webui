@@ -87,7 +87,7 @@
 	<div>
 		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
 			<div class=" text-lg font-medium self-center">{title}</div>
-			<button
+			<button aria-label="Close"
 				class="self-center"
 				on:click={() => {
 					show = false;
@@ -292,7 +292,7 @@
 											<div class="flex justify-end pl-2.5 text-gray-600 dark:text-gray-300">
 												{#if unarchiveHandler}
 													<Tooltip content={$i18n.t('Unarchive Chat')}>
-														<button
+														<button aria-label="Select"
 															class="self-center w-fit px-1 text-sm rounded-xl"
 															on:click={async (e) => {
 																e.stopImmediatePropagation();
@@ -423,7 +423,7 @@
 												<th scope="col" class="px-3 py-2 hidden md:flex">
 													{$i18n.t('Created At')}
 												</th>
-												<th scope="col" class="px-3 py-2 text-right" />
+												<th scope="col" class="px-3 py-2 text-right"></th>
 											</tr>
 										</thead>
 										<tbody>

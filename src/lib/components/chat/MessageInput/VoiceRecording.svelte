@@ -433,8 +433,7 @@
 							: 'bg-indigo-500 dark:bg-indigo-400  '} 
                     
                     inline-block h-full"
-						style="height: {Math.min(100, Math.max(14, rms * 100))}%;"
-					/>
+						style="height: {Math.min(100, Math.max(14, rms * 100))}%;"></div>
 				</div>
 			{/each}
 		</div>
@@ -546,7 +545,7 @@
 					>
 				</div>
 			{:else}
-				<button
+				<button aria-label="Cancel recording"
 					type="button"
 					class="p-1.5 bg-indigo-500 text-white dark:bg-indigo-500 dark:text-blue-950 rounded-full"
 					on:click={async () => {

@@ -45,7 +45,8 @@
 </script>
 
 <div class="relative w-full" style="height:{height}px">
-	<svg
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<svg role="img"
 		viewBox="0 0 {w} {height - 20}"
 		class="h-[calc(100%-20px)] w-full"
 		preserveAspectRatio="none"

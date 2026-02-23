@@ -187,7 +187,7 @@
 										<img src={image} alt="" class="size-10 rounded-xl object-cover" />
 									</div>
 									<div class=" absolute -top-1 -right-1">
-										<button
+										<button aria-label="Download image"
 											class=" bg-white text-black border border-white rounded-full group-hover:visible invisible transition"
 											type="button"
 											on:click={() => removeImage(index)}
@@ -228,7 +228,7 @@
 								}
 							}}
 							rows="2"
-						/>
+						></textarea>
 					</div>
 
 					<!-- Actions -->

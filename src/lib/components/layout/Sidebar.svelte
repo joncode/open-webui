@@ -656,7 +656,7 @@
 		on:mousedown={() => {
 			showSidebar.set(!$showSidebar);
 		}}
-	/>
+	></div>
 {/if}
 
 <SearchModal
@@ -668,14 +668,14 @@
 	}}
 />
 
-<button
+<button aria-label="New chat"
 	id="sidebar-new-chat-button"
 	class="hidden"
 	on:click={() => {
 		goto('/');
 		newChatHandler();
 	}}
-/>
+></button>
 
 <svelte:window
 	on:mousemove={(e) => {
@@ -912,7 +912,7 @@
 					/>
 				</a>
 
-				<a href="/" class="flex flex-1 px-1.5" on:click={newChatHandler}>
+				<a aria-label="Menu" href="/" class="flex flex-1 px-1.5" on:click={newChatHandler}>
 				</a>
 				<Tooltip
 					content={$showSidebar ? $i18n.t('Close Sidebar') : $i18n.t('Open Sidebar')}
@@ -1437,15 +1437,16 @@
 	</div>
 
 	{#if !$mobile}
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="relative flex items-center justify-center group border-l border-gray-50 dark:border-gray-850/30 hover:border-gray-200 dark:hover:border-gray-800 transition z-20"
 			id="sidebar-resizer"
 			on:mousedown={resizeStartHandler}
 			role="separator"
+			tabindex="-1"
 		>
 			<div
-				class=" absolute -left-1.5 -right-1.5 -top-0 -bottom-0 z-20 cursor-col-resize bg-transparent"
-			/>
+				class=" absolute -left-1.5 -right-1.5 -top-0 -bottom-0 z-20 cursor-col-resize bg-transparent"></div>
 		</div>
 	{/if}
 {/if}

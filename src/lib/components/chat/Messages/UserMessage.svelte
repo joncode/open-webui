@@ -240,7 +240,7 @@
 											/>
 										</div>
 										<div class=" absolute -top-1 -right-1">
-											<button
+											<button aria-label="Edit"
 												class=" bg-white text-black border border-white rounded-full {($settings?.highContrastMode ??
 												false)
 													? ''
@@ -317,7 +317,7 @@
 									document.getElementById('confirm-edit-message-button')?.click();
 								}
 							}}
-						/>
+						></textarea>
 					</div>
 
 					<div class=" mt-2 mb-1 flex justify-between text-sm font-medium">
@@ -388,7 +388,7 @@
 					{#if !($settings?.chatBubble ?? true)}
 						{#if siblings.length > 1}
 							<div class="flex self-center" dir="ltr">
-								<button
+								<button aria-label="Copy"
 									class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
 									on:click={() => {
 										showPreviousMessage(message);
@@ -455,7 +455,7 @@
 									</div>
 								{/if}
 
-								<button
+								<button aria-label="Edit"
 									class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
 									on:click={() => {
 										showNextMessage(message);
@@ -481,7 +481,7 @@
 					{/if}
 					{#if !readOnly}
 						<Tooltip content={$i18n.t('Edit')} placement="bottom">
-							<button
+							<button aria-label="Read aloud"
 								class="{($settings?.highContrastMode ?? false)
 									? ''
 									: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition edit-user-message-button"
@@ -509,7 +509,7 @@
 
 					{#if message?.content}
 						<Tooltip content={$i18n.t('Copy')} placement="bottom">
-							<button
+							<button aria-label="Continue"
 								class="{($settings?.highContrastMode ?? false)
 									? ''
 									: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
@@ -538,7 +538,7 @@
 					{#if $_user?.role === 'admin' || ($_user?.permissions?.chat?.delete_message ?? false)}
 						{#if !readOnly && (!isFirstMessage || siblings.length > 1)}
 							<Tooltip content={$i18n.t('Delete')} placement="bottom">
-								<button
+								<button aria-label="Regenerate"
 									class="{($settings?.highContrastMode ?? false)
 										? ''
 										: 'invisible group-hover:visible'} p-1 rounded-sm dark:hover:text-white hover:text-black transition"
@@ -568,7 +568,7 @@
 					{#if $settings?.chatBubble ?? true}
 						{#if siblings.length > 1}
 							<div class="flex self-center" dir="ltr">
-								<button
+								<button aria-label="Delete"
 									class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
 									on:click={() => {
 										showPreviousMessage(message);
@@ -635,7 +635,7 @@
 									</div>
 								{/if}
 
-								<button
+								<button aria-label="More options"
 									class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
 									on:click={() => {
 										showNextMessage(message);

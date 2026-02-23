@@ -326,7 +326,9 @@
 						{@const _messageId =
 							groupedMessageIds[modelIdx].messageIds[groupedMessageIdsIdx[modelIdx]]}
 
-						<div
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<div role="button" tabindex="0"
 							class=" snap-center w-full max-w-full m-1 border {history.messages[messageId]
 								?.modelIdx == modelIdx
 								? `bg-gray-50 dark:bg-gray-850 border-gray-100 dark:border-gray-800 border-2 ${

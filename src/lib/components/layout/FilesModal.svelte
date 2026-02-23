@@ -198,7 +198,7 @@
 	<div>
 		<div class="flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
 			<div class="text-lg font-medium self-center">{$i18n.t('Files')}</div>
-			<button
+			<button aria-label="Close"
 				class="self-center"
 				on:click={() => {
 					show = false;
@@ -320,9 +320,14 @@
 							{/if}
 
 							{#each files as file (file.id)}
-								<div
+								<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div
+									role="button"
+									tabindex="0"
 									class="w-full flex justify-between items-center rounded-lg text-sm py-2 px-3 hover:bg-gray-50 dark:hover:bg-gray-850 cursor-pointer"
 									on:click={() => openFileViewer(file)}
+									on:keydown={(e) => { if (e.key === 'Enter') openFileViewer(file); }}
 								>
 									<div class="basis-3/5 min-w-0">
 										<div class="text-ellipsis line-clamp-1">{file.filename}</div>

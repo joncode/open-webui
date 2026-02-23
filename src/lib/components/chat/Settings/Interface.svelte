@@ -1044,6 +1044,7 @@
 
 			<div>
 				<div class=" py-0.5 flex w-full justify-between">
+					<!-- svelte-ignore a11y_label_has_associated_control -->
 					<label id="floating-action-buttons-label" class=" self-center text-xs">
 						{$i18n.t('Floating Quick Actions')}
 					</label>

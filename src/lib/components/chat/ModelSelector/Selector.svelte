@@ -403,6 +403,7 @@
 		aria-label={placeholder}
 		id="model-selector-{id}-button"
 	>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="flex w-full text-left px-0.5 bg-transparent truncate {triggerClassName} justify-between {($settings?.highContrastMode ??
 			false)
@@ -583,7 +584,7 @@
 							listScrollTop = listContainer.scrollTop;
 						}}
 					>
-						<div style="height: {visibleStart * ITEM_HEIGHT}px;" />
+						<div style="height: {visibleStart * ITEM_HEIGHT}px;"></div>
 						{#each filteredItems.slice(visibleStart, visibleEnd) as item, i (item.value)}
 							{@const index = visibleStart + i}
 							<ModelItem
@@ -601,7 +602,7 @@
 								}}
 							/>
 						{/each}
-						<div style="height: {(filteredItems.length - visibleEnd) * ITEM_HEIGHT}px;" />
+						<div style="height: {(filteredItems.length - visibleEnd) * ITEM_HEIGHT}px;"></div>
 					</div>
 				{/if}
 
@@ -657,7 +658,7 @@
 
 						<div class="mr-2 ml-1 translate-y-0.5">
 							<Tooltip content={$i18n.t('Cancel')}>
-								<button
+								<button aria-label="Remove model"
 									class="text-gray-800 dark:text-gray-100"
 									on:click={() => {
 										cancelModelPullHandler(model);
@@ -689,8 +690,8 @@
 
 			<div class="mb-2.5"></div>
 
-			<div class="hidden w-[42rem]" />
-			<div class="hidden w-[32rem]" />
+			<div class="hidden w-[42rem]"></div>
+			<div class="hidden w-[32rem]"></div>
 		</slot>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

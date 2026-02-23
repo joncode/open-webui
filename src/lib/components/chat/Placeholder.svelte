@@ -126,6 +126,7 @@
 											class=" size-9 @sm:size-10 rounded-full border-[1px] border-gray-100 dark:border-none"
 											aria-hidden="true"
 											draggable="false"
+											alt="Model profile"
 										/>
 									</button>
 								</Tooltip>

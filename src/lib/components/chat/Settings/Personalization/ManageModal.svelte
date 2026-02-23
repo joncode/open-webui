@@ -54,7 +54,7 @@
 	<div>
 		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
 			<div class=" text-lg font-medium self-center">{$i18n.t('Memory')}</div>
-			<button
+			<button aria-label="Close"
 				class="self-center"
 				on:click={() => {
 					show = false;
@@ -89,7 +89,7 @@
 										<th scope="col" class="px-3 py-2 hidden md:flex">
 											{$i18n.t('Last Modified')}
 										</th>
-										<th scope="col" class="px-3 py-2 text-right" />
+										<th scope="col" class="px-3 py-2 text-right"></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -108,7 +108,7 @@
 											<td class="px-3 py-1">
 												<div class="flex justify-end w-full">
 													<Tooltip content="Edit">
-														<button
+														<button aria-label="Edit"
 															class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
 															on:click={() => {
 																selectedMemory = memory;
@@ -133,7 +133,7 @@
 													</Tooltip>
 
 													<Tooltip content="Delete">
-														<button
+														<button aria-label="Delete"
 															class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
 															on:click={async () => {
 																const res = await deleteMemoryById(
