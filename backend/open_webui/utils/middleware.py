@@ -2563,18 +2563,23 @@ async def process_chat_payload(request, form_data, user, metadata, model):
     # Jaco step-mode: inject step system prompt into messages
     chat_id = metadata.get("chat_id")
     if chat_id:
-        chat_obj = Chats.get_chat_by_id(chat_id)
-        step_ctx = StepContext.from_dict(
-            chat_obj.step_context if chat_obj else None
-        )
-        # Sync step_mode toggle from chat JSON blob into step_context
-        if chat_obj and hasattr(chat_obj, "chat") and isinstance(chat_obj.chat, dict):
-            ui_step_mode = chat_obj.chat.get("step_mode", False)
-            step_ctx.step_mode_enabled = ui_step_mode
-        form_data["messages"] = inject_step_system_prompt(
-            form_data.get("messages", []), step_ctx
-        )
-        metadata["step_context"] = step_ctx.to_dict()
+        try:
+            chat_obj = Chats.get_chat_by_id(chat_id)
+            step_ctx = StepContext.from_dict(
+                chat_obj.step_context if chat_obj else None
+            )
+            # Sync step_mode toggle from chat JSON blob into step_context
+            if chat_obj and hasattr(chat_obj, "chat"):
+                chat_data = chat_obj.chat if isinstance(chat_obj.chat, dict) else {}
+                ui_step_mode = chat_data.get("step_mode", False)
+                step_ctx.step_mode_enabled = ui_step_mode
+            form_data["messages"] = inject_step_system_prompt(
+                form_data.get("messages", []), step_ctx
+            )
+            metadata["step_context"] = step_ctx.to_dict()
+        except Exception as e:
+            log.warning(f"Step mode injection failed (non-blocking): {e}")
+            metadata["step_context"] = StepContext().to_dict()
 
     # Jaco topic-tracking: classify topic shift on incoming user message
     if chat_id and not chat_id.startswith("local:"):
