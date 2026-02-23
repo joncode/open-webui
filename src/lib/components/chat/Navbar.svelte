@@ -268,13 +268,7 @@
 								class="select-none flex rounded-xl p-1.5 w-full hover:bg-gray-50 dark:hover:bg-gray-850 transition"
 							>
 								<div class=" self-center">
-									<span class="sr-only">{$i18n.t('User menu')}</span>
-									<img
-										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
-										class="size-6 object-cover rounded-full"
-										alt=""
-										draggable="false"
-									/>
+									<span class="text-xs font-medium text-gray-600 dark:text-gray-300">Account</span>
 								</div>
 							</div>
 						</UserMenu>
