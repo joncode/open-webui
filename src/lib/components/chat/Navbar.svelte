@@ -221,8 +221,7 @@
 						</Menu>
 					{/if}
 
-					{#if chat?.id}
-						<Tooltip content={stepModeEnabled ? $i18n.t('Step mode on') : $i18n.t('Step mode off')}>
+					<Tooltip content={stepModeEnabled ? $i18n.t('Step mode on') : $i18n.t('Step mode off')}>
 							<button
 								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition {stepModeEnabled ? 'text-jaco-sunflower' : ''}"
 								on:click={toggleStepMode}
@@ -235,7 +234,6 @@
 								</div>
 							</button>
 						</Tooltip>
-					{/if}
 
 					{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
 						<Tooltip content={$i18n.t('Controls')}>
