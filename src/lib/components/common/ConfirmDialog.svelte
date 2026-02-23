@@ -10,6 +10,7 @@
 	import { fade } from 'svelte/transition';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { marked } from 'marked';
+	import SensitiveInput from './SensitiveInput.svelte';
 
 	export let title = '';
 	export let message = '';
@@ -22,6 +23,7 @@
 	export let input = false;
 	export let inputPlaceholder = '';
 	export let inputValue = '';
+	export let inputType = '';
 
 	export let show = false;
 
@@ -130,12 +132,28 @@
 						{/if}
 
 						{#if input}
-							<textarea
-								bind:value={inputValue}
-								placeholder={inputPlaceholder ? inputPlaceholder : $i18n.t('Enter your message')}
-								class="w-full mt-2 rounded-lg px-4 py-2 text-sm dark:text-gray-300 dark:bg-gray-900 outline-hidden resize-none"
-								rows="3"
-								required></textarea>
+							{#if inputType === 'password'}
+								<div
+									class="w-full mt-2 rounded-lg px-4 py-2 text-sm dark:text-gray-300 dark:bg-gray-900"
+								>
+									<SensitiveInput
+										id="event-confirm-input"
+										placeholder={inputPlaceholder
+											? inputPlaceholder
+											: $i18n.t('Enter your message')}
+										bind:value={inputValue}
+										required={true}
+									/>
+								</div>
+							{:else}
+								<textarea
+									bind:value={inputValue}
+									placeholder={inputPlaceholder ? inputPlaceholder : $i18n.t('Enter your message')}
+									class="w-full mt-2 rounded-lg px-4 py-2 text-sm dark:text-gray-300 dark:bg-gray-900 outline-hidden resize-none"
+									rows="3"
+									required
+								/>
+							{/if}
 						{/if}
 					</div>
 				</slot>
@@ -167,4 +185,18 @@
 {/if}
 
 <style>
+	.modal-content {
+		animation: scaleUp 0.1s ease-out forwards;
+	}
+
+	@keyframes scaleUp {
+		from {
+			transform: scale(0.985);
+			opacity: 0;
+		}
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
 </style>
