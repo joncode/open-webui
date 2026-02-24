@@ -2,10 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: jaco-config
-  namespace: jaco
+  namespace: jaco-stg
 data:
   ENV: "prod"
-  DEPLOY_ENV: "production"
+  DEPLOY_ENV: "staging"
   PORT: "8080"
   DOCKER: "true"
   WEBUI_NAME: "Jaco"
@@ -18,9 +18,9 @@ data:
   WEBSOCKET_MANAGER: "redis"
   ENABLE_WEBSOCKET_SUPPORT: "true"
 
-  # Domain — replace <YOUR_DOMAIN> with your actual domain
-  WEBUI_URL: "https://jaco.manifest.network"
-  CORS_ALLOW_ORIGIN: "https://jaco.manifest.network"
+  # Domain
+  WEBUI_URL: "https://jaco-stg.manifest.network"
+  CORS_ALLOW_ORIGIN: "https://jaco-stg.manifest.network"
 
   # Auth
   ENABLE_SIGNUP: "true"
@@ -40,7 +40,7 @@ data:
 
   # Server
   UVICORN_WORKERS: "1"
-  GLOBAL_LOG_LEVEL: "INFO"
+  GLOBAL_LOG_LEVEL: "DEBUG"
 
   # Telemetry off
   ANONYMIZED_TELEMETRY: "false"
