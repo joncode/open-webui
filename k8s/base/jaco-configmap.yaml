@@ -10,6 +10,9 @@ data:
   DOCKER: "true"
   WEBUI_NAME: "Jaco"
 
+  # Morpheus API (OpenAI-compatible)
+  OPENAI_API_BASE_URL: "https://api.mor.org/api/v1"
+
   # Disable Ollama (using external LLM APIs only)
   ENABLE_OLLAMA_API: "false"
 
