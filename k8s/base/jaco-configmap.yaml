@@ -21,7 +21,7 @@ data:
   WEBSOCKET_MANAGER: "redis"
   ENABLE_WEBSOCKET_SUPPORT: "true"
 
-  # Domain — replace <YOUR_DOMAIN> with your actual domain
+  # Domain
   WEBUI_URL: "https://jaco.manifest.network"
   CORS_ALLOW_ORIGIN: "https://jaco.manifest.network"
 

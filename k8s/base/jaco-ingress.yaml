@@ -8,8 +8,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   rules:
-    # Replace <YOUR_DOMAIN> with your actual domain
-    - host: <YOUR_DOMAIN>
+    - host: jaco.manifest.network
       http:
         paths:
           - path: /
