@@ -24,7 +24,8 @@ docker save jaco:latest | sudo k3s ctr images import -
 
 echo "==> Applying k8s manifests..."
 sudo kubectl apply -f "$K8S_BASE/namespace.yaml"
-sudo kubectl apply -f "$K8S_BASE/jaco-secret.yaml"
+# Secret is created imperatively — do NOT apply the template here
+# See: kubectl -n jaco create secret generic jaco-secret --from-literal=...
 sudo kubectl apply -f "$K8S_BASE/jaco-configmap.yaml"
 sudo kubectl apply -f "$K8S_BASE/redis-deployment.yaml"
 sudo kubectl apply -f "$K8S_BASE/redis-service.yaml"
