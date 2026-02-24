@@ -18,12 +18,16 @@ data:
   ENABLE_WEBSOCKET_SUPPORT: "true"
 
   # Domain — replace <YOUR_DOMAIN> with your actual domain
-  WEBUI_URL: "https://<YOUR_DOMAIN>"
-  CORS_ALLOW_ORIGIN: "https://<YOUR_DOMAIN>"
+  WEBUI_URL: "https://jaco.manifest.network"
+  CORS_ALLOW_ORIGIN: "https://jaco.manifest.network"
 
   # Auth
-  ENABLE_SIGNUP: "false"
+  ENABLE_SIGNUP: "true"
+  ENABLE_DIRECT_CONNECTIONS: "true"
   WEBUI_AUTH: "true"
+
+  # Models — all users can see all models
+  BYPASS_MODEL_ACCESS_CONTROL: "true"
   WEBUI_SESSION_COOKIE_SECURE: "true"
   WEBUI_SESSION_COOKIE_SAME_SITE: "lax"
 
