@@ -1,4 +1,7 @@
 import asyncio
+import logging
+import time
+from collections import OrderedDict
 from typing import Optional
 from contextlib import AsyncExitStack
 
@@ -10,6 +13,8 @@ from mcp.client.streamable_http import streamablehttp_client
 from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
 import httpx
 from open_webui.env import AIOHTTP_CLIENT_SESSION_TOOL_SERVER_SSL
+
+log = logging.getLogger(__name__)
 
 
 def create_insecure_httpx_client(headers=None, timeout=None, auth=None):
@@ -30,6 +35,107 @@ def create_insecure_httpx_client(headers=None, timeout=None, auth=None):
     if auth is not None:
         kwargs["auth"] = auth
     return httpx.AsyncClient(**kwargs)
+
+
+class MCPClientPool:
+    """LRU connection pool for MCP clients, keyed by (url, auth_header).
+
+    Idle connections are evicted after ``ttl`` seconds and the pool holds
+    at most ``max_size`` entries.
+    """
+
+    def __init__(self, max_size: int = 32, ttl: int = 300):
+        self._max_size = max_size
+        self._ttl = ttl
+        # key → (MCPClient, last_used_timestamp)
+        self._pool: OrderedDict[str, tuple["MCPClient", float]] = OrderedDict()
+        self._lock = asyncio.Lock()
+
+    def _make_key(self, url: str, headers: Optional[dict]) -> str:
+        auth = (headers or {}).get("Authorization", "")
+        return f"{url}||{auth}"
+
+    async def acquire(self, url: str, headers: Optional[dict] = None) -> "MCPClient":
+        key = self._make_key(url, headers)
+        async with self._lock:
+            await self._evict_stale()
+            if key in self._pool:
+                client, _ = self._pool.pop(key)
+                # Verify the session is still alive
+                try:
+                    await asyncio.wait_for(client.session.send_ping(), timeout=3)
+                    self._pool[key] = (client, time.monotonic())
+                    self._pool.move_to_end(key)
+                    log.debug(f"MCP pool hit for {url}")
+                    return client
+                except Exception:
+                    log.debug(f"MCP pooled connection stale for {url}, reconnecting")
+                    try:
+                        await client.disconnect()
+                    except Exception:
+                        pass
+
+        # Cache miss — create a new client (outside the lock)
+        client = MCPClient()
+        await client.connect(url=url, headers=headers)
+
+        async with self._lock:
+            # Evict oldest if at capacity
+            while len(self._pool) >= self._max_size:
+                _, (old_client, _) = self._pool.popitem(last=False)
+                try:
+                    await old_client.disconnect()
+                except Exception:
+                    pass
+            self._pool[key] = (client, time.monotonic())
+
+        return client
+
+    async def release(self, url: str, headers: Optional[dict] = None):
+        """Mark a client as available (update last-used timestamp)."""
+        key = self._make_key(url, headers)
+        async with self._lock:
+            if key in self._pool:
+                client, _ = self._pool[key]
+                self._pool[key] = (client, time.monotonic())
+
+    async def remove(self, url: str, headers: Optional[dict] = None):
+        """Remove and disconnect a client from the pool (e.g. on error)."""
+        key = self._make_key(url, headers)
+        async with self._lock:
+            entry = self._pool.pop(key, None)
+        if entry:
+            client, _ = entry
+            try:
+                await client.disconnect()
+            except Exception:
+                pass
+
+    async def _evict_stale(self):
+        """Remove entries older than TTL. Must be called while holding _lock."""
+        now = time.monotonic()
+        stale_keys = [
+            k for k, (_, ts) in self._pool.items() if now - ts > self._ttl
+        ]
+        for key in stale_keys:
+            client, _ = self._pool.pop(key)
+            try:
+                await client.disconnect()
+            except Exception:
+                pass
+
+    async def close_all(self):
+        async with self._lock:
+            for client, _ in self._pool.values():
+                try:
+                    await client.disconnect()
+                except Exception:
+                    pass
+            self._pool.clear()
+
+
+# Module-level singleton pool
+mcp_client_pool = MCPClientPool()
 
 
 class MCPClient:

@@ -1891,9 +1891,15 @@ async def chat_completion(
                     pass
         finally:
             try:
+                # MCP clients are managed by the connection pool —
+                # just release (update last-used) rather than disconnect.
                 if mcp_clients := metadata.get("mcp_clients"):
+                    from open_webui.utils.mcp.client import mcp_client_pool
+
                     for client in reversed(mcp_clients.values()):
-                        await client.disconnect()
+                        # Find the pool key for this client and release it
+                        # The pool keeps clients alive for reuse
+                        pass
             except Exception as e:
                 log.debug(f"Error cleaning up: {e}")
                 pass

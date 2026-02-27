@@ -52,10 +52,16 @@
 	let messageEditTextAreaElement: HTMLTextAreaElement;
 	let editScrollContainer: HTMLDivElement;
 
-	let message = JSON.parse(JSON.stringify(history.messages[messageId]));
+	let message = structuredClone(history.messages[messageId]);
+	let _prevContentLen = message.content?.length ?? 0;
+	let _prevDone = message.done;
 	$: if (history.messages) {
-		if (JSON.stringify(message) !== JSON.stringify(history.messages[messageId])) {
-			message = JSON.parse(JSON.stringify(history.messages[messageId]));
+		const src = history.messages[messageId];
+		const contentLen = src.content?.length ?? 0;
+		if (contentLen !== _prevContentLen || src.done !== _prevDone) {
+			message = structuredClone(src);
+			_prevContentLen = contentLen;
+			_prevDone = src.done;
 		}
 	}
 

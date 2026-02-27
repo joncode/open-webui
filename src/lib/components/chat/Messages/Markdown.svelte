@@ -1,5 +1,6 @@
 <script>
 	import { marked } from 'marked';
+	import { onDestroy } from 'svelte';
 	import { replaceTokens, processResponseContent } from '$lib/utils';
 	import { user } from '$lib/stores';
 
@@ -53,13 +54,46 @@
 		]
 	});
 
-	$: (async () => {
-		if (content) {
-			tokens = marked.lexer(
-				replaceTokens(processResponseContent(content), model?.name, $user?.name)
-			);
+	const DEBOUNCE_MS = 100;
+	let _debounceTimer = null;
+	let _pendingContent = null;
+
+	function lexContent(text) {
+		tokens = marked.lexer(
+			replaceTokens(processResponseContent(text), model?.name, $user?.name)
+		);
+	}
+
+	$: if (content) {
+		if (done) {
+			// When streaming is done, lex immediately and cancel any pending debounce
+			if (_debounceTimer) {
+				clearTimeout(_debounceTimer);
+				_debounceTimer = null;
+			}
+			lexContent(content);
+		} else {
+			// During streaming, debounce lexing to at most once per DEBOUNCE_MS
+			_pendingContent = content;
+			if (!_debounceTimer) {
+				// Lex immediately on the first token, then debounce subsequent ones
+				lexContent(content);
+				_debounceTimer = setTimeout(() => {
+					_debounceTimer = null;
+					if (_pendingContent) {
+						lexContent(_pendingContent);
+						_pendingContent = null;
+					}
+				}, DEBOUNCE_MS);
+			}
 		}
-	})();
+	}
+
+	onDestroy(() => {
+		if (_debounceTimer) {
+			clearTimeout(_debounceTimer);
+		}
+	});
 </script>
 
 {#key id}

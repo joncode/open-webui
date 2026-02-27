@@ -123,7 +123,7 @@ from open_webui.utils.filter import (
 from open_webui.utils.code_interpreter import execute_code_jupyter
 from open_webui.utils.payload import apply_system_prompt_to_body
 from open_webui.utils.response import normalize_usage
-from open_webui.utils.mcp.client import MCPClient
+from open_webui.utils.mcp.client import MCPClient, mcp_client_pool
 
 
 from open_webui.config import (
@@ -1323,6 +1323,16 @@ async def chat_web_search_handler(
     messages = form_data["messages"]
     user_message = get_last_user_message(messages)
 
+    # Start searching with the raw user prompt immediately while
+    # the LLM generates optimized queries in parallel.
+    raw_search_task = asyncio.create_task(
+        process_web_search(
+            request,
+            SearchForm(queries=[user_message]),
+            user=user,
+        )
+    )
+
     queries = []
     try:
         res = await generate_queries(
@@ -1375,6 +1385,12 @@ async def chat_web_search_handler(
                 },
             }
         )
+        # Cancel and consume the raw search task
+        raw_search_task.cancel()
+        try:
+            await raw_search_task
+        except (asyncio.CancelledError, Exception):
+            pass
         return form_data
 
     await event_emitter(
@@ -1389,11 +1405,49 @@ async def chat_web_search_handler(
     )
 
     try:
-        results = await process_web_search(
-            request,
-            SearchForm(queries=queries),
-            user=user,
-        )
+        # Wait for both the raw search and the optimized-query search
+        raw_results = None
+        try:
+            raw_results = await raw_search_task
+        except Exception as e:
+            log.debug(f"Raw query pre-search failed (non-fatal): {e}")
+
+        # Only search with LLM-generated queries that differ from the raw prompt
+        extra_queries = [q for q in queries if q.strip().lower() != user_message.strip().lower()]
+        if extra_queries:
+            results = await process_web_search(
+                request,
+                SearchForm(queries=extra_queries),
+                user=user,
+            )
+        else:
+            results = None
+
+        # Merge raw results into optimized results
+        if raw_results and results:
+            # Merge filenames (deduplicated)
+            seen_urls = set(results.get("filenames", []))
+            for url in raw_results.get("filenames", []):
+                if url not in seen_urls:
+                    results["filenames"].append(url)
+                    seen_urls.add(url)
+            # Merge items
+            existing_links = {i.get("link") if isinstance(i, dict) else getattr(i, "link", None) for i in results.get("items", [])}
+            for item in raw_results.get("items", []):
+                link = item.get("link") if isinstance(item, dict) else getattr(item, "link", None)
+                if link not in existing_links:
+                    results["items"].append(item)
+            # Merge collection_names
+            if raw_results.get("collection_names"):
+                existing_cols = set(results.get("collection_names", []))
+                for col in raw_results["collection_names"]:
+                    if col not in existing_cols:
+                        results.setdefault("collection_names", []).append(col)
+            # Merge docs
+            if raw_results.get("docs"):
+                results.setdefault("docs", []).extend(raw_results["docs"])
+        elif raw_results and not results:
+            results = raw_results
 
         if results:
             files = form_data.get("files", [])
@@ -1930,31 +1984,38 @@ async def convert_url_images_to_base64(form_data):
         if not isinstance(content, list):
             continue
 
-        new_content = []
+        # Collect indices and URLs of images that need conversion
+        convert_tasks = []
+        convert_indices = []
+        new_content = list(content)
 
-        for item in content:
+        for idx, item in enumerate(content):
             if not isinstance(item, dict) or item.get("type") != "image_url":
-                new_content.append(item)
                 continue
 
             image_url = item.get("image_url", {}).get("url", "")
             if image_url.startswith("data:image/"):
-                new_content.append(item)
                 continue
 
-            try:
-                base64_data = await asyncio.to_thread(
-                    get_image_base64_from_url, image_url
-                )
-                new_content.append(
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": base64_data},
-                    }
-                )
-            except Exception as e:
-                log.debug(f"Error converting image URL to base64: {e}")
-                new_content.append(item)
+            convert_tasks.append(
+                asyncio.to_thread(get_image_base64_from_url, image_url)
+            )
+            convert_indices.append(idx)
+
+        if not convert_tasks:
+            continue
+
+        # Convert all images in parallel
+        results = await asyncio.gather(*convert_tasks, return_exceptions=True)
+
+        for idx, result in zip(convert_indices, results):
+            if isinstance(result, Exception):
+                log.debug(f"Error converting image URL to base64: {result}")
+            elif result:
+                new_content[idx] = {
+                    "type": "image_url",
+                    "image_url": {"url": result},
+                }
 
         message["content"] = new_content
 
@@ -2415,10 +2476,11 @@ async def process_chat_payload(request, form_data, user, metadata, model):
                                     metadata.get("message_id")
                                 )
 
-                        mcp_clients[server_id] = MCPClient()
-                        await mcp_clients[server_id].connect(
-                            url=mcp_server_connection.get("url", ""),
-                            headers=headers if headers else None,
+                        _mcp_url = mcp_server_connection.get("url", "")
+                        _mcp_headers = headers if headers else None
+                        mcp_clients[server_id] = await mcp_client_pool.acquire(
+                            url=_mcp_url,
+                            headers=_mcp_headers,
                         )
 
                         function_name_filter_list = mcp_server_connection.get(

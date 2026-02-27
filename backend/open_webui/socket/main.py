@@ -775,8 +775,34 @@ async def disconnect(sid):
         # print(f"Unknown session ID {sid} disconnected")
 
 
+_MESSAGE_FLUSH_INTERVAL = 1.0  # seconds — flush accumulated content to DB at most this often
+
+
 def get_event_emitter(request_info, update_db=True):
+    # Per-emitter state for batching "message" content writes
+    _pending_content = ""
+    _flush_task: asyncio.Task | None = None
+    _last_flushed_content = ""
+
+    async def _flush_content():
+        """Write accumulated content to the DB."""
+        nonlocal _pending_content, _flush_task, _last_flushed_content
+        _flush_task = None
+
+        if not _pending_content or _pending_content == _last_flushed_content:
+            return
+
+        content_to_write = _pending_content
+        Chats.upsert_message_to_chat_by_id_and_message_id(
+            request_info["chat_id"],
+            request_info["message_id"],
+            {"content": content_to_write},
+        )
+        _last_flushed_content = content_to_write
+
     async def __event_emitter__(event_data):
+        nonlocal _pending_content, _flush_task, _last_flushed_content
+
         user_id = request_info["user_id"]
         chat_id = request_info["chat_id"]
         message_id = request_info["message_id"]
@@ -804,33 +830,32 @@ def get_event_emitter(request_info, update_db=True):
                 )
 
             if "type" in event_data and event_data["type"] == "message":
-                message = Chats.get_message_by_id_and_message_id(
-                    request_info["chat_id"],
-                    request_info["message_id"],
-                )
+                delta = event_data.get("data", {}).get("content", "")
 
-                if message:
-                    content = message.get("content", "")
-                    content += event_data.get("data", {}).get("content", "")
-
-                    Chats.upsert_message_to_chat_by_id_and_message_id(
+                if not _pending_content:
+                    # First message event — seed with existing DB content
+                    msg = Chats.get_message_by_id_and_message_id(
                         request_info["chat_id"],
                         request_info["message_id"],
-                        {
-                            "content": content,
-                        },
+                    )
+                    _pending_content = msg.get("content", "") if msg else ""
+                    _last_flushed_content = _pending_content
+
+                _pending_content += delta
+
+                # Schedule a flush if one is not already pending
+                if _flush_task is None or _flush_task.done():
+                    _flush_task = asyncio.ensure_future(
+                        _deferred_flush()
                     )
 
             if "type" in event_data and event_data["type"] == "replace":
                 content = event_data.get("data", {}).get("content", "")
-
-                Chats.upsert_message_to_chat_by_id_and_message_id(
-                    request_info["chat_id"],
-                    request_info["message_id"],
-                    {
-                        "content": content,
-                    },
-                )
+                # Replace overrides any pending batched content
+                _pending_content = content
+                _last_flushed_content = ""
+                # Flush immediately for replace events
+                await _flush_content()
 
             if "type" in event_data and event_data["type"] == "embeds":
                 message = Chats.get_message_by_id_and_message_id(
@@ -884,6 +909,14 @@ def get_event_emitter(request_info, update_db=True):
                             "sources": sources,
                         },
                     )
+
+    async def _deferred_flush():
+        """Wait for the flush interval, then write."""
+        await asyncio.sleep(_MESSAGE_FLUSH_INTERVAL)
+        await _flush_content()
+
+    # Attach flush method so callers can force a final write
+    __event_emitter__.flush = _flush_content
 
     if (
         "user_id" in request_info

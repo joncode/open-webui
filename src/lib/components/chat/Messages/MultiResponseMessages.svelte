@@ -60,10 +60,26 @@
 
 	let selectedModelIdx = null;
 
-	let message = JSON.parse(JSON.stringify(history.messages[messageId]));
+	let message = structuredClone(history.messages[messageId]);
+	let _prevContentLen = message.content?.length ?? 0;
+	let _prevSourcesLen = message.sources?.length ?? 0;
+	let _prevDone = message.done;
+	let _prevError = message.error;
 	$: if (history.messages) {
-		if (JSON.stringify(message) !== JSON.stringify(history.messages[messageId])) {
-			message = JSON.parse(JSON.stringify(history.messages[messageId]));
+		const src = history.messages[messageId];
+		const contentLen = src.content?.length ?? 0;
+		const sourcesLen = src.sources?.length ?? 0;
+		if (
+			contentLen !== _prevContentLen ||
+			sourcesLen !== _prevSourcesLen ||
+			src.done !== _prevDone ||
+			src.error !== _prevError
+		) {
+			message = structuredClone(src);
+			_prevContentLen = contentLen;
+			_prevSourcesLen = sourcesLen;
+			_prevDone = src.done;
+			_prevError = src.error;
 		}
 	}
 
