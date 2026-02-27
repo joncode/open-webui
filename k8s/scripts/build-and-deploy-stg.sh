@@ -37,6 +37,7 @@ sudo kubectl apply -f "$K8S_STG/jaco-pvc.yaml"
 sudo kubectl apply -f "$K8S_STG/jaco-deployment.yaml"
 sudo kubectl apply -f "$K8S_STG/jaco-service.yaml"
 sudo kubectl apply -f "$K8S_STG/jaco-ingress.yaml"
+sudo kubectl apply -f "$K8S_STG/jaco-hpa.yaml"
 
 echo "==> [STAGING] Restarting jaco deployment to pick up new image..."
 sudo kubectl -n jaco-stg rollout restart deployment/jaco

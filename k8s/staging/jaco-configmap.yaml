@@ -35,14 +35,14 @@ data:
   WEBUI_SESSION_COOKIE_SECURE: "true"
   WEBUI_SESSION_COOKIE_SAME_SITE: "lax"
 
-  # Database
+  # Database (smaller pool per worker — PgBouncer handles multiplexing)
   ENABLE_DB_MIGRATIONS: "true"
-  DATABASE_POOL_SIZE: "10"
-  DATABASE_POOL_MAX_OVERFLOW: "5"
-  DATABASE_POOL_RECYCLE: "3600"
+  DATABASE_POOL_SIZE: "3"
+  DATABASE_POOL_MAX_OVERFLOW: "2"
+  DATABASE_POOL_RECYCLE: "1800"
 
   # Server
-  UVICORN_WORKERS: "1"
+  UVICORN_WORKERS: "4"
   GLOBAL_LOG_LEVEL: "DEBUG"
 
   # Content Security Policy
