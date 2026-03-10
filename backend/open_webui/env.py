@@ -917,9 +917,8 @@ SENTENCE_TRANSFORMERS_CROSS_ENCODER_SIGMOID_ACTIVATION_FUNCTION = (
 # OFFLINE_MODE
 ####################################
 
-ENABLE_VERSION_UPDATE_CHECK = (
-    os.environ.get("ENABLE_VERSION_UPDATE_CHECK", "true").lower() == "true"
-)
+# Disabled — Agent1 manages its own releases, never phone home to open-webui
+ENABLE_VERSION_UPDATE_CHECK = False
 OFFLINE_MODE = os.environ.get("OFFLINE_MODE", "false").lower() == "true"
 
 if OFFLINE_MODE:
