@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class TopicConfig:
     """Tunable parameters for topic classification."""
+    enabled: bool = False  # Disabled — feature not ready for production
     similarity_threshold: float = 0.65
     min_messages_before_split: int = 3
     embedding_window: int = 5
@@ -122,6 +123,10 @@ async def classify_topic_shift(
                   Signature: async (prompt: str) -> str
     """
     decision = SplitDecision()
+
+    # Feature kill switch
+    if not config.enabled:
+        return decision
 
     # Don't split too early
     if message_count < config.min_messages_before_split:
