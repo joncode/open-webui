@@ -142,6 +142,10 @@
 
 	onMount(async () => {
 		if ($user === undefined || $user === null) {
+			// Allow unauthenticated users to view the landing page at /
+			if ($page.url.pathname === '/') {
+				return;
+			}
 			await goto('/auth');
 			return;
 		}
@@ -401,6 +405,8 @@
 			{/if}
 		</div>
 	</div>
+{:else}
+	<slot />
 {/if}
 
 <style>

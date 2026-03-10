@@ -808,16 +808,20 @@
 						await goto(`/auth?redirect=${encodedUrl}`);
 					}
 				} else {
-					// Don't redirect if we're already on the auth page
+					// Don't redirect if we're on the landing page, auth page, or error page
 					// Needed because we pass in tokens from OAuth logins via URL fragments
-					if ($page.url.pathname !== '/auth') {
+					const pathname = $page.url.pathname;
+					if (pathname !== '/' && pathname !== '/auth' && pathname !== '/error') {
 						await goto(`/auth?redirect=${encodedUrl}`);
 					}
 				}
 			}
 		} else {
-			// Redirect to /error when Backend Not Detected
-			await goto(`/error`);
+			// When running frontend-only (no backend), allow landing at / instead of showing error
+			const pathname = $page.url.pathname;
+			if (pathname !== '/') {
+				await goto(`/error`);
+			}
 		}
 
 		await tick();
