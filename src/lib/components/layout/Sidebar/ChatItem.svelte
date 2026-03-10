@@ -77,6 +77,7 @@
 	}
 
 	let chat = null;
+	let draggable = true;
 
 	let mouseOver = false;
 
