@@ -3,6 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 import base64
 import io
+import hashlib
 
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -554,12 +555,42 @@ def get_user_profile_image_by_id(user_id: str, user=Depends(get_verified_user)):
                     )
                 except Exception as e:
                     pass
-        return FileResponse(f"{STATIC_DIR}/user.png")
+        # Generate initials avatar on-the-fly
+        return _generate_initials_response(user.name or user.email or "?")
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ERROR_MESSAGES.USER_NOT_FOUND,
         )
+
+
+def _generate_initials_response(name: str) -> Response:
+    """Generate an SVG avatar with the user's initials and a deterministic color."""
+    sanitized = name.strip()
+    parts = sanitized.split()
+    if len(parts) > 1:
+        initials = (parts[0][0] + parts[-1][0]).upper()
+    elif sanitized:
+        initials = sanitized[0].upper()
+    else:
+        initials = "?"
+
+    # Deterministic color from name
+    hue = int(hashlib.md5(sanitized.lower().encode()).hexdigest()[:8], 16) % 360
+    bg_color = f"hsl({hue}, 45%, 55%)"
+
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="50" fill="{bg_color}"/>
+  <text x="50" y="53" text-anchor="middle" dominant-baseline="middle"
+        font-family="system-ui, -apple-system, sans-serif" font-size="40"
+        font-weight="600" fill="white">{initials}</text>
+</svg>'''
+
+    return Response(
+        content=svg.encode("utf-8"),
+        media_type="image/svg+xml",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 ############################
