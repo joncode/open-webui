@@ -8,7 +8,7 @@ data:
   DEPLOY_ENV: "staging"
   PORT: "8080"
   DOCKER: "true"
-  WEBUI_NAME: "Jaco (QA)"
+  WEBUI_NAME: "Agent1 (QA)"
 
   # Morpheus API (OpenAI-compatible)
   OPENAI_API_BASE_URL: "https://api.mor.org/api/v1"

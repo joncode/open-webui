@@ -8,7 +8,7 @@ data:
   DEPLOY_ENV: "production"
   PORT: "8080"
   DOCKER: "true"
-  WEBUI_NAME: "Jaco"
+  WEBUI_NAME: "Agent1"
 
   # Morpheus API (OpenAI-compatible)
   OPENAI_API_BASE_URL: "https://api.mor.org/api/v1"
@@ -22,8 +22,8 @@ data:
   ENABLE_WEBSOCKET_SUPPORT: "true"
 
   # Domain
-  WEBUI_URL: "https://jaco.manifest.network"
-  CORS_ALLOW_ORIGIN: "https://jaco.manifest.network"
+  WEBUI_URL: "https://agent1.manifest.network"
+  CORS_ALLOW_ORIGIN: "https://agent1.manifest.network"
 
   # Auth
   ENABLE_SIGNUP: "true"
@@ -50,7 +50,7 @@ data:
   CHAT_RESPONSE_STREAM_DELTA_CHUNK_SIZE: "5"
 
   # Content Security Policy
-  CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.mor.org wss://jaco.manifest.network; worker-src 'self' blob:; manifest-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'"
+  CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.mor.org wss://agent1.manifest.network; worker-src 'self' blob:; manifest-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'"
 
   # Telemetry off
   ANONYMIZED_TELEMETRY: "false"

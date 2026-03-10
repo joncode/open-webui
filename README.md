@@ -1,24 +1,6 @@
-# JACO 👋
+# AGENT! 👋
 
-
-
-
-Open WebUI Banner
-
-**Open WebUI is an [extensible](https://docs.openwebui.com/features/extensibility/plugin), feature-rich, and user-friendly self-hosted AI platform designed to operate entirely offline.** It supports various LLM runners like **Ollama** and **OpenAI-compatible APIs**, with **built-in inference engine** for RAG, making it a **powerful AI deployment solution**.
-
-Passionate about open-source AI? [Join our team →](https://careers.openwebui.com/)
-
-Open WebUI Demo
-
-> [!TIP]  
-> **Looking for an [Enterprise Plan](https://docs.openwebui.com/enterprise)?** – **[Speak with Our Sales Team Today!](https://docs.openwebui.com/enterprise)**
->
-> Get **enhanced capabilities**, including **custom theming and branding**, **Service Level Agreement (SLA) support**, **Long-Term Support (LTS) versions**, and **more!**
-
-For more information, be sure to check out our [Open WebUI Documentation](https://docs.openwebui.com/).
-
-## Key Features of Open WebUI ⭐
+## Key Features of AGENT1 ⭐
 
 - 🚀 **Effortless Setup**: Install seamlessly using Docker or Kubernetes (kubectl, kustomize or helm) for a hassle-free experience with support for both `:ollama` and `:cuda` tagged images.
 - 🤝 **Ollama/OpenAI API Integration**: Effortlessly integrate OpenAI-compatible APIs for versatile conversations alongside Ollama models. Customize the OpenAI API URL to link with **LMStudio, GroqCloud, Mistral, OpenRouter, and more**.
@@ -83,7 +65,7 @@ This will start the Open WebUI server, which you can access at [http://localhost
   docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main
   ```
 - **If Ollama is on a Different Server**, use this command:
-  To connect to Ollama on another server, change the `OLLAMA_BASE_URL` to the server's URL:
+To connect to Ollama on another server, change the `OLLAMA_BASE_URL` to the server's URL:
   ```bash
   docker run -d -p 3000:8080 -e OLLAMA_BASE_URL=https://example.com -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main
   ```
@@ -174,10 +156,6 @@ This project contains code under multiple licenses. The current codebase include
 If you have any questions, suggestions, or need assistance, please open an issue or join our
 [Open WebUI Discord community](https://discord.gg/5rJgQTnV4s) to connect with us! 🤝
 
-
-
-
-
 ---
 
-Created by [JonCode](https://github.com/tjbck) - Let's make Jaco amazing together! 💪
+Created by [JonCode](https://github.com/tjbck) - Let's make Agent1 amazing together! 💪

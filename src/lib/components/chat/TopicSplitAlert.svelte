@@ -72,7 +72,7 @@
 				<div class="flex items-center gap-2 text-sm">
 					<span>🎸</span>
 					<span class="text-jaco-charcoal dark:text-jaco-cream">
-						Jaco's about to split
+						Agent1's about to split
 						<strong class="text-jaco-red">{newTopic}</strong>
 						out of
 						<strong>{oldTopic}</strong>
@@ -84,7 +84,7 @@
 					class="text-jaco-red font-semibold text-sm whitespace-nowrap
 						   hover:underline underline-offset-2 transition-colors"
 				>
-					Don't do it, Jaco →
+					Don't do it, Agent1 →
 				</button>
 			</div>
 		{/if}
