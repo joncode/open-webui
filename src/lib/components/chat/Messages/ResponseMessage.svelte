@@ -998,7 +998,8 @@
 									</button>
 								</Tooltip>
 
-								{#if $user?.role === 'admin' || ($user?.permissions?.chat?.tts ?? true)}
+								{#if false && ($user?.role === 'admin' || ($user?.permissions?.chat?.tts ?? true))}
+									<!-- TTS hidden — no TTS engine configured yet -->
 									<Tooltip content={$i18n.t('Read Aloud')} placement="bottom">
 										<button
 											aria-label={$i18n.t('Read Aloud')}
