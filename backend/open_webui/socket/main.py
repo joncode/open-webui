@@ -37,6 +37,7 @@ from open_webui.env import (
     WEBSOCKET_SERVER_PING_INTERVAL,
     WEBSOCKET_SERVER_LOGGING,
     WEBSOCKET_SERVER_ENGINEIO_LOGGING,
+    WEBSOCKET_EVENT_CALLER_TIMEOUT,
 )
 from open_webui.utils.auth import decode_token
 from open_webui.socket.utils import RedisDict, RedisLock, YdocManager
@@ -816,14 +817,18 @@ def get_event_emitter(request_info, update_db=True):
             },
             room=f"user:{user_id}",
         )
+
         if (
             update_db
             and message_id
             and not request_info.get("chat_id", "").startswith("local:")
         ):
 
-            if "type" in event_data and event_data["type"] == "status":
-                Chats.add_message_status_to_chat_by_id_and_message_id(
+            event_type = event_data.get("type")
+
+            if event_type == "status":
+                await asyncio.to_thread(
+                    Chats.add_message_status_to_chat_by_id_and_message_id,
                     request_info["chat_id"],
                     request_info["message_id"],
                     event_data.get("data", {}),
@@ -849,7 +854,7 @@ def get_event_emitter(request_info, update_db=True):
                         _deferred_flush()
                     )
 
-            if "type" in event_data and event_data["type"] == "replace":
+            elif event_type == "replace":
                 content = event_data.get("data", {}).get("content", "")
                 # Replace overrides any pending batched content
                 _pending_content = content
@@ -857,8 +862,9 @@ def get_event_emitter(request_info, update_db=True):
                 # Flush immediately for replace events
                 await _flush_content()
 
-            if "type" in event_data and event_data["type"] == "embeds":
-                message = Chats.get_message_by_id_and_message_id(
+            elif event_type == "embeds":
+                message = await asyncio.to_thread(
+                    Chats.get_message_by_id_and_message_id,
                     request_info["chat_id"],
                     request_info["message_id"],
                 )
@@ -866,7 +872,8 @@ def get_event_emitter(request_info, update_db=True):
                 embeds = event_data.get("data", {}).get("embeds", [])
                 embeds.extend(message.get("embeds", []))
 
-                Chats.upsert_message_to_chat_by_id_and_message_id(
+                await asyncio.to_thread(
+                    Chats.upsert_message_to_chat_by_id_and_message_id,
                     request_info["chat_id"],
                     request_info["message_id"],
                     {
@@ -874,8 +881,9 @@ def get_event_emitter(request_info, update_db=True):
                     },
                 )
 
-            if "type" in event_data and event_data["type"] == "files":
-                message = Chats.get_message_by_id_and_message_id(
+            elif event_type == "files":
+                message = await asyncio.to_thread(
+                    Chats.get_message_by_id_and_message_id,
                     request_info["chat_id"],
                     request_info["message_id"],
                 )
@@ -883,7 +891,8 @@ def get_event_emitter(request_info, update_db=True):
                 files = event_data.get("data", {}).get("files", [])
                 files.extend(message.get("files", []))
 
-                Chats.upsert_message_to_chat_by_id_and_message_id(
+                await asyncio.to_thread(
+                    Chats.upsert_message_to_chat_by_id_and_message_id,
                     request_info["chat_id"],
                     request_info["message_id"],
                     {
@@ -891,10 +900,11 @@ def get_event_emitter(request_info, update_db=True):
                     },
                 )
 
-            if event_data.get("type") in ["source", "citation"]:
+            elif event_type in ("source", "citation"):
                 data = event_data.get("data", {})
-                if data.get("type") == None:
-                    message = Chats.get_message_by_id_and_message_id(
+                if data.get("type") is None:
+                    message = await asyncio.to_thread(
+                        Chats.get_message_by_id_and_message_id,
                         request_info["chat_id"],
                         request_info["message_id"],
                     )
@@ -902,7 +912,8 @@ def get_event_emitter(request_info, update_db=True):
                     sources = message.get("sources", [])
                     sources.append(data)
 
-                    Chats.upsert_message_to_chat_by_id_and_message_id(
+                    await asyncio.to_thread(
+                        Chats.upsert_message_to_chat_by_id_and_message_id,
                         request_info["chat_id"],
                         request_info["message_id"],
                         {
@@ -938,6 +949,7 @@ def get_event_call(request_info):
                 "data": event_data,
             },
             to=request_info["session_id"],
+            timeout=WEBSOCKET_EVENT_CALLER_TIMEOUT,
         )
         return response
 

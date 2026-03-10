@@ -121,25 +121,17 @@
 	export let selectedModels = [];
 
 	let message: MessageType = structuredClone(history.messages[messageId]);
-	let _prevContentLen = message.content?.length ?? 0;
-	let _prevSourcesLen = message.sources?.length ?? 0;
-	let _prevDone = message.done;
-	let _prevError = message.error;
 	$: if (history.messages) {
-		const src = history.messages[messageId];
-		const contentLen = src.content?.length ?? 0;
-		const sourcesLen = src.sources?.length ?? 0;
-		if (
-			contentLen !== _prevContentLen ||
-			sourcesLen !== _prevSourcesLen ||
-			src.done !== _prevDone ||
-			src.error !== _prevError
-		) {
-			message = structuredClone(src);
-			_prevContentLen = contentLen;
-			_prevSourcesLen = sourcesLen;
-			_prevDone = src.done;
-			_prevError = src.error;
+		const source = history.messages[messageId];
+		if (source) {
+			// Fast path: O(1) check on the fields that change most often (content during streaming, done at end)
+			// Avoids 2x O(n) JSON.stringify calls that are always true during streaming anyway
+			if (message.content !== source.content || message.done !== source.done) {
+				message = structuredClone(source);
+			} else if (JSON.stringify(message) !== JSON.stringify(source)) {
+				// Slow path: full comparison for infrequent changes (sources, annotations, status, etc.)
+				message = structuredClone(source);
+			}
 		}
 	}
 

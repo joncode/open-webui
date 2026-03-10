@@ -1,6 +1,6 @@
 <script>
-	import { marked } from 'marked';
 	import { onDestroy } from 'svelte';
+	import { marked } from 'marked';
 	import { replaceTokens, processResponseContent } from '$lib/utils';
 	import { user } from '$lib/stores';
 
@@ -35,6 +35,9 @@
 	export let onTaskClick = () => {};
 
 	let tokens = [];
+	let pendingUpdate = null;
+	let lastContent = '';
+	let lastParsedContent = '';
 
 	const options = {
 		throwOnError: false,
@@ -54,45 +57,37 @@
 		]
 	});
 
-	const DEBOUNCE_MS = 100;
-	let _debounceTimer = null;
-	let _pendingContent = null;
+	const parseTokens = () => {
+		if (content === lastContent) return;
+		lastContent = content;
 
-	function lexContent(text) {
-		tokens = marked.lexer(
-			replaceTokens(processResponseContent(text), model?.name, $user?.name)
-		);
-	}
+		const processed = replaceTokens(processResponseContent(content), model?.name, $user?.name);
+		if (processed === lastParsedContent) return;
+		lastParsedContent = processed;
 
-	$: if (content) {
-		if (done) {
-			// When streaming is done, lex immediately and cancel any pending debounce
-			if (_debounceTimer) {
-				clearTimeout(_debounceTimer);
-				_debounceTimer = null;
-			}
-			lexContent(content);
-		} else {
-			// During streaming, debounce lexing to at most once per DEBOUNCE_MS
-			_pendingContent = content;
-			if (!_debounceTimer) {
-				// Lex immediately on the first token, then debounce subsequent ones
-				lexContent(content);
-				_debounceTimer = setTimeout(() => {
-					_debounceTimer = null;
-					if (_pendingContent) {
-						lexContent(_pendingContent);
-						_pendingContent = null;
-					}
-				}, DEBOUNCE_MS);
+		tokens = marked.lexer(processed);
+	};
+
+	const updateHandler = (content) => {
+		if (content) {
+			if (done) {
+				cancelAnimationFrame(pendingUpdate);
+				pendingUpdate = null;
+				parseTokens();
+			} else if (!pendingUpdate) {
+				pendingUpdate = requestAnimationFrame(() => {
+					pendingUpdate = null;
+					parseTokens();
+				});
 			}
 		}
-	}
+	};
 
-	onDestroy(() => {
-		if (_debounceTimer) {
-			clearTimeout(_debounceTimer);
-		}
+	$: updateHandler(content);
+
+	// Throttle parsing to once per animation frame while streaming
+	$: onDestroy(() => {
+		cancelAnimationFrame(pendingUpdate);
 	});
 </script>
 

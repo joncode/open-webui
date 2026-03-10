@@ -53,15 +53,14 @@
 	let editScrollContainer: HTMLDivElement;
 
 	let message = structuredClone(history.messages[messageId]);
-	let _prevContentLen = message.content?.length ?? 0;
-	let _prevDone = message.done;
 	$: if (history.messages) {
-		const src = history.messages[messageId];
-		const contentLen = src.content?.length ?? 0;
-		if (contentLen !== _prevContentLen || src.done !== _prevDone) {
-			message = structuredClone(src);
-			_prevContentLen = contentLen;
-			_prevDone = src.done;
+		const source = history.messages[messageId];
+		if (source) {
+			if (message.content !== source.content) {
+				message = structuredClone(source);
+			} else if (JSON.stringify(message) !== JSON.stringify(source)) {
+				message = structuredClone(source);
+			}
 		}
 	}
 

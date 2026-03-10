@@ -61,25 +61,14 @@
 	let selectedModelIdx = null;
 
 	let message = structuredClone(history.messages[messageId]);
-	let _prevContentLen = message.content?.length ?? 0;
-	let _prevSourcesLen = message.sources?.length ?? 0;
-	let _prevDone = message.done;
-	let _prevError = message.error;
 	$: if (history.messages) {
-		const src = history.messages[messageId];
-		const contentLen = src.content?.length ?? 0;
-		const sourcesLen = src.sources?.length ?? 0;
-		if (
-			contentLen !== _prevContentLen ||
-			sourcesLen !== _prevSourcesLen ||
-			src.done !== _prevDone ||
-			src.error !== _prevError
-		) {
-			message = structuredClone(src);
-			_prevContentLen = contentLen;
-			_prevSourcesLen = sourcesLen;
-			_prevDone = src.done;
-			_prevError = src.error;
+		const source = history.messages[messageId];
+		if (source) {
+			if (message.content !== source.content || message.done !== source.done) {
+				message = structuredClone(source);
+			} else if (JSON.stringify(message) !== JSON.stringify(source)) {
+				message = structuredClone(source);
+			}
 		}
 	}
 
@@ -264,6 +253,9 @@
 					<div class=" flex w-full mb-4.5 border-b border-gray-200 dark:border-gray-850">
 						<div
 							class="flex gap-2 scrollbar-none overflow-x-auto w-fit text-center font-medium bg-transparent pt-1 text-sm"
+							on:wheel|preventDefault={(e) => {
+								e.currentTarget.scrollLeft += e.deltaY;
+							}}
 						>
 							{#each Object.keys(groupedMessageIds) as modelIdx}
 								{#if groupedMessageIdsIdx[modelIdx] !== undefined && (groupedMessageIds[modelIdx]?.messageIds ?? []).length > 0}

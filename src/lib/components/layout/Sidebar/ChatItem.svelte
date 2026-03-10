@@ -64,45 +64,21 @@
 
 		const minutes = Math.floor(diff / 60000);
 		const hours = Math.floor(diff / 3600000);
+		const days = Math.floor(diff / 86400000);
+		const weeks = Math.floor(days / 7);
+		const years = Math.floor(days / 365);
 
-		// Today: relative time
-		if (date.toDateString() === now.toDateString()) {
-			if (minutes < 1) return '1m ago';
-			if (minutes < 60) return `${minutes}m ago`;
-			return `${hours}h ago`;
-		}
-
-		// Yesterday
-		const yesterday = new Date(now);
-		yesterday.setDate(yesterday.getDate() - 1);
-		if (date.toDateString() === yesterday.toDateString()) {
-			return 'Yesterday';
-		}
-
-		// This week: day name
-		const daysDiff = Math.floor(diff / 86400000);
-		if (daysDiff < 7) {
-			return date.toLocaleDateString('en-US', { weekday: 'short' });
-		}
-
-		// Different year
-		if (date.getFullYear() !== now.getFullYear()) {
-			const month = date.toLocaleDateString('en-US', { month: 'short' });
-			const year = String(date.getFullYear()).slice(-2);
-			return `${month} '${year}`;
-		}
-
-		// Same year: "Feb 5"
-		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+		if (years > 0) return $i18n.t('{{COUNT}}y', { COUNT: years, context: 'time_ago' });
+		if (weeks > 0) return $i18n.t('{{COUNT}}w', { COUNT: weeks, context: 'time_ago' });
+		if (days > 0) return $i18n.t('{{COUNT}}d', { COUNT: days, context: 'time_ago' });
+		if (hours > 0) return $i18n.t('{{COUNT}}h', { COUNT: hours, context: 'time_ago' });
+		if (minutes > 0) return $i18n.t('{{COUNT}}m', { COUNT: minutes, context: 'time_ago' });
+		return $i18n.t('1m', { context: 'time_ago' });
 	}
 
 	let chat = null;
 
 	let mouseOver = false;
-	let draggable = false;
-	$: if (mouseOver) {
-		loadChat();
-	}
 
 	const loadChat = async () => {
 		if (!chat) {
@@ -178,8 +154,14 @@
 	};
 
 	const archiveChatHandler = async (id) => {
-		await archiveChatById(localStorage.token, id);
-		dispatch('change');
+		try {
+			await archiveChatById(localStorage.token, id);
+			dispatch('change');
+			toast.success($i18n.t('Chat archived.'));
+		} catch (error) {
+			console.error('Error archiving chat:', error);
+			toast.error($i18n.t('Failed to archive chat.'));
+		}
 	};
 
 	const moveChatHandler = async (chatId, folderId) => {
@@ -230,8 +212,7 @@
 			'text/plain',
 			JSON.stringify({
 				type: 'chat',
-				id: id,
-				item: chat
+				id: id
 			})
 		);
 
