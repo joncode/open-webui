@@ -49,7 +49,9 @@
   flex-direction: column;
   min-height: 100dvh;
   overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
+  height: auto;
 }
 
 .landing .landing-bg-grid {
@@ -233,8 +235,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: var(--landing-space-6) var(--landing-space-4);
+  justify-content: flex-start;
+  padding: var(--landing-space-8) var(--landing-space-4);
   gap: var(--landing-space-8);
 }
 
