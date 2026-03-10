@@ -277,7 +277,7 @@
 									{/if}
 								</div>
 
-								{#if $config?.features.enable_login_form || $config?.features.enable_ldap || form}
+								{#if !$config || $config?.features.enable_login_form || $config?.features.enable_ldap || form}
 									<div class="flex flex-col mt-4">
 										{#if mode === 'signup'}
 											<div class="mb-2">
@@ -370,7 +370,7 @@
 									</div>
 								{/if}
 								<div class="mt-5">
-									{#if $config?.features.enable_login_form || $config?.features.enable_ldap || form}
+									{#if !$config || $config?.features.enable_login_form || $config?.features.enable_ldap || form}
 										{#if mode === 'ldap'}
 											<button
 												class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
@@ -390,7 +390,7 @@
 														: $i18n.t('Create Account')}
 											</button>
 
-											{#if $config?.features.enable_signup && !($config?.onboarding ?? false)}
+											{#if (!$config || $config?.features?.enable_signup) && !($config?.onboarding ?? false)}
 												<div class=" mt-4 text-sm text-center">
 													{mode === 'signin'
 														? $i18n.t("Don't have an account?")
