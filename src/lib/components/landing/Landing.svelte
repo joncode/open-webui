@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import './landing.css';
 
 	const DEMO_RESPONSES = [
@@ -101,9 +101,15 @@
 	}
 
 	onMount(() => {
+		// Override the global html { overflow-y: hidden !important } from app.html
+		// so the landing page can scroll
+		document.documentElement.style.setProperty('overflow-y', 'auto', 'important');
+
 		return () => {
 			if (typingTimeout) clearTimeout(typingTimeout);
 			if (typingInterval) clearInterval(typingInterval);
+			// Restore hidden overflow for the chat app
+			document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
 		};
 	});
 </script>
