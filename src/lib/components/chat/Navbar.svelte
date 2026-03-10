@@ -225,20 +225,7 @@
 						</Menu>
 					{/if}
 
-					<Tooltip content={stepModeEnabled ? $i18n.t('Step mode on') : $i18n.t('Step mode off')}>
-							<button
-								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-								style={stepModeEnabled ? 'color: #D4A843;' : ''}
-								on:click={toggleStepMode}
-								aria-label="Toggle step mode"
-							>
-								<div class="m-auto self-center">
-									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
-									</svg>
-								</div>
-							</button>
-						</Tooltip>
+					<!-- Step mode button disabled — feature not ready for production -->
 
 					{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
 						<Tooltip content={$i18n.t('Controls')}>
