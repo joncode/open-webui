@@ -92,8 +92,8 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--landing-space-4) var(--landing-space-6);
-  border-bottom: 1px solid var(--landing-color-border);
-  background: rgba(10, 11, 15, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   position: sticky;
@@ -107,22 +107,11 @@
   gap: var(--landing-space-3);
 }
 
-.landing .header-logo {
-  width: 32px;
-  height: 32px;
+.landing .header-brand-image {
+  height: 56px;
+  width: auto;
+  display: block;
   flex-shrink: 0;
-}
-
-.landing .header-brand-name {
-  font-family: var(--landing-font-display);
-  font-size: var(--landing-text-lg);
-  font-weight: 600;
-  color: var(--landing-color-text);
-  letter-spacing: -0.02em;
-}
-
-.landing .header-brand-name span {
-  color: var(--landing-color-primary);
 }
 
 .landing .header-tag {
@@ -207,6 +196,11 @@
 
 .landing .partner-banner-logo--colored {
   filter: none;
+}
+
+.landing .partner-banner-logo--manifest {
+  height: 51px;
+  max-width: 306px;
 }
 
 /* Morpheus: wordmark on top, green square logo below */
@@ -734,6 +728,10 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .landing .header-brand-image {
+    height: 46px;
+  }
+
   .landing .main-content {
     padding: var(--landing-space-4) var(--landing-space-3);
     gap: var(--landing-space-5);
@@ -757,6 +755,11 @@
     height: 28px;
   }
 
+  .landing .partner-banner-logo--manifest {
+    height: 37px;
+    max-width: 238px;
+  }
+
   .landing .partners-roles {
     gap: var(--landing-space-4);
   }
@@ -767,6 +770,10 @@
 }
 
 @media (max-width: 480px) {
+  .landing .header-brand-image {
+    height: 38px;
+  }
+
   .landing .chat-container {
     border-radius: var(--landing-radius-lg);
     min-height: 320px;

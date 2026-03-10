@@ -113,7 +113,7 @@
 	<meta name="description" content="agent1.Manifest: No-cost private, secure, uncensored AI running on decentralized compute." />
 	<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </svelte:head>
 
@@ -124,19 +124,7 @@
 	<div class="landing-page-wrapper">
 		<header class="site-header">
 			<div class="header-brand">
-				<svg class="header-logo" viewBox="0 0 32 32" aria-label="agent1.Manifest logo">
-					<rect width="32" height="32" rx="8" fill="url(#landing-logo-gradient)" />
-					<text x="16" y="21" text-anchor="middle" font-family="'General Sans', sans-serif" font-weight="700" font-size="14" fill="#0a0b0f">a1</text>
-					<defs>
-						<linearGradient id="landing-logo-gradient" x1="0" y1="0" x2="32" y2="32">
-							<stop offset="0%" stop-color="#00d4ff" />
-							<stop offset="100%" stop-color="#7c5cfc" />
-						</linearGradient>
-					</defs>
-				</svg>
-				<div>
-					<div class="header-brand-name">agent1<span>.Manifest</span></div>
-				</div>
+				<img src="/landing/agent1-wordmark.png" alt="agent1.Manifest" class="header-brand-image" />
 				<span class="header-tag">Private AI</span>
 			</div>
 			<a href="/auth" class="header-cta">Sign in</a>
@@ -146,16 +134,13 @@
 			<span class="partners-banner-label">Your Partners in Decentralization</span>
 			<div class="partners-banner-logos">
 				<a href="https://manifest.network" target="_blank" rel="noopener noreferrer" class="partner-banner-link">
-					<img src="/landing/manifest-logo.png" alt="Manifest Network" class="partner-banner-logo partner-banner-logo--colored" />
+					<img src="/landing/manifest-logo.png" alt="Manifest Network" class="partner-banner-logo partner-banner-logo--colored partner-banner-logo--manifest" />
 				</a>
 				<a href="https://rendernetwork.com" target="_blank" rel="noopener noreferrer" class="partner-banner-link">
 					<img src="/landing/render-logo.svg" alt="Render Network" class="partner-banner-logo" />
 				</a>
-				<a href="https://mor.org" target="_blank" rel="noopener noreferrer" class="partner-banner-link partner-banner-link--stacked">
-					<span class="partner-banner-stack">
-						<img src="/landing/morpheus-og.png" alt="Morpheus" class="partner-banner-logo partner-banner-logo--colored partner-banner-logo--wordmark" />
-						<img src="/landing/morpheus-logo.png" alt="" class="partner-banner-logo partner-banner-logo--colored partner-banner-logo--square" aria-hidden="true" />
-					</span>
+				<a href="https://mor.org" target="_blank" rel="noopener noreferrer" class="partner-banner-link">
+					<img src="/landing/morpheus-og.png" alt="Morpheus" class="partner-banner-logo partner-banner-logo--colored partner-banner-logo--wordmark" />
 				</a>
 				<a href="https://venice.ai" target="_blank" rel="noopener noreferrer" class="partner-banner-link">
 					<img src="/landing/venice-lockup-white.png" alt="Venice AI" class="partner-banner-logo partner-banner-logo--colored partner-banner-logo--tall" />
