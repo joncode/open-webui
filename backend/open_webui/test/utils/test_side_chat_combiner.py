@@ -69,7 +69,7 @@ class TestGenerateCombinedStep:
         )
         prompt = mock_llm.call_args[0][0]
         assert "User: What about TypeScript?" in prompt
-        assert "Jaco: Good idea, use TS." in prompt
+        assert "Agent1: Good idea, use TS." in prompt
 
     @pytest.mark.asyncio
     async def test_role_mapping_user(self):
@@ -85,7 +85,7 @@ class TestGenerateCombinedStep:
 
     @pytest.mark.asyncio
     async def test_role_mapping_assistant(self):
-        """Assistant role should map to 'Jaco' label."""
+        """Assistant role should map to 'Agent1' label."""
         mock_llm = AsyncMock(return_value="result")
         await generate_combined_step(
             original_step_content="Step",
@@ -93,11 +93,11 @@ class TestGenerateCombinedStep:
             llm_call=mock_llm,
         )
         prompt = mock_llm.call_args[0][0]
-        assert "Jaco: reply" in prompt
+        assert "Agent1: reply" in prompt
 
     @pytest.mark.asyncio
     async def test_role_mapping_system(self):
-        """Non-user roles should map to 'Jaco' label."""
+        """Non-user roles should map to 'Agent1' label."""
         mock_llm = AsyncMock(return_value="result")
         await generate_combined_step(
             original_step_content="Step",
@@ -105,7 +105,7 @@ class TestGenerateCombinedStep:
             llm_call=mock_llm,
         )
         prompt = mock_llm.call_args[0][0]
-        assert "Jaco: sys msg" in prompt
+        assert "Agent1: sys msg" in prompt
 
     @pytest.mark.asyncio
     async def test_empty_side_chat_messages(self):

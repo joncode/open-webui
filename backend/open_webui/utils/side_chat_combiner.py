@@ -48,7 +48,7 @@ async def generate_combined_step(
     # Format side chat history
     history_lines = []
     for msg in side_chat_messages:
-        role = "User" if msg["role"] == "user" else "Jaco"
+        role = "User" if msg["role"] == "user" else "Agent1"
         history_lines.append(f"{role}: {msg['content']}")
 
     side_chat_history = "\n".join(history_lines)

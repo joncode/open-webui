@@ -16,7 +16,7 @@ import re
 from typing import Optional
 
 # System prompt fragment injected for step-by-step mode
-STEP_MODE_SYSTEM_PROMPT = """You are Jaco, a helpful AI assistant that delivers complex answers one step at a time.
+STEP_MODE_SYSTEM_PROMPT = """You are Agent1, a helpful AI assistant that delivers complex answers one step at a time.
 
 ## Step Mode Rules
 
