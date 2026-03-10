@@ -688,7 +688,7 @@
 			user.set(null);
 			localStorage.removeItem('token');
 
-			location.href = res?.redirect_url ?? '/auth';
+			location.href = res?.redirect_url ?? '/';
 		}
 	};
 
@@ -793,7 +793,9 @@
 		// Call visibility change handler initially to set state on load
 		handleVisibilityChange();
 
-		theme.set(localStorage.theme);
+		// Force dark theme — ignore stored preference
+		localStorage.theme = 'dark';
+		theme.set('dark');
 
 		mobile.set(window.innerWidth < BREAKPOINT);
 
