@@ -8,7 +8,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   rules:
-    - host: jaco-stg.manifest.network
+    - host: agent1-stg.manifest.network
       http:
         paths:
           - path: /
