@@ -894,7 +894,7 @@
 				class="sidebar px-[0.5625rem] pt-2 pb-1.5 flex justify-between space-x-1 text-gray-600 dark:text-gray-400 sticky top-0 z-10 -mb-3"
 			>
 				<a
-					class="flex items-center rounded-xl size-8.5 h-full justify-center hover:bg-gray-100/50 dark:hover:bg-gray-850/50 transition no-drag-region"
+					class="flex items-center gap-2.5 flex-1 rounded-xl px-1.5 h-full hover:bg-gray-100/50 dark:hover:bg-gray-850/50 transition no-drag-region"
 					href="/"
 					draggable="false"
 					on:click={newChatHandler}
@@ -904,9 +904,11 @@
 						class="sidebar-new-chat-icon size-6 rounded-full"
 						alt=""
 					/>
-				</a>
-
-				<a aria-label="Menu" href="/" class="flex flex-1 px-1.5" on:click={newChatHandler}>
+					<img
+						src="/landing/agent1-wordmark.png"
+						class="h-5 w-auto"
+						alt="{$WEBUI_NAME}"
+					/>
 				</a>
 				<Tooltip
 					content={$showSidebar ? $i18n.t('Close Sidebar') : $i18n.t('Open Sidebar')}
