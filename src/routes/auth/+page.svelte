@@ -173,6 +173,7 @@
 	<title>
 		{`${$WEBUI_NAME}`}
 	</title>
+	<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
 </svelte:head>
 
 <OnBoarding
@@ -182,10 +183,6 @@
 		mode = $config?.features.enable_ldap ? 'ldap' : 'signup';
 	}}
 />
-
-<svelte:head>
-	<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
-</svelte:head>
 
 <div class="w-full h-screen max-h-[100dvh] text-white relative" id="auth-page">
 	<!-- Landing-style background -->
