@@ -675,8 +675,12 @@
 								{$i18n.t('No Notes')}
 							</div>
 
+							<div class="mt-1 text-xs text-gray-300 dark:text-gray-700">
+								{$i18n.t('Create your first note to get started.')}
+							</div>
+
 							<button
-								class="mt-4 px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-base font-medium transition flex items-center gap-2"
+								class="mt-4 px-6 py-3 bg-white dark:bg-white hover:bg-gray-100 dark:hover:bg-gray-200 text-gray-900 rounded-xl text-base font-medium transition flex items-center gap-2 shadow-sm"
 								on:click={async () => {
 									const res = await createNoteHandler(dayjs().format('YYYY-MM-DD'));
 								}}
