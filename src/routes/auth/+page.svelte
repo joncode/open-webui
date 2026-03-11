@@ -215,185 +215,178 @@
 					</div>
 				{:else}
 					<div class="my-auto flex flex-col justify-center items-center">
-						<div class=" sm:max-w-md my-auto pb-10 w-full text-gray-100">
-							{#if $config?.metadata?.auth_logo_position === 'center'}
-								<div class="flex justify-center mb-6">
-									<img
-										crossorigin="anonymous"
-										src="/landing/agent1-wordmark.png"
-										class="h-16 w-auto max-w-full"
-										alt="{$WEBUI_NAME} logo"
-									/>
-								</div>
-							{/if}
-							<form
-								class=" flex flex-col justify-center"
-								on:submit={(e) => {
-									e.preventDefault();
-									submitHandler();
-								}}
-							>
-								<div class="mb-1">
-									<div class=" text-2xl font-semibold text-white">
-										{#if $config?.onboarding ?? false}
-											{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
-										{:else if mode === 'ldap'}
-											{$i18n.t(`Sign in to {{WEBUI_NAME}} with LDAP`, { WEBUI_NAME: $WEBUI_NAME })}
-										{:else if mode === 'signin'}
-											{$i18n.t(`Sign in to {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
-										{:else}
-											{$i18n.t(`Sign up to {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
-										{/if}
+						<div class="w-full max-w-[480px] my-auto text-gray-100">
+							<!-- Chat-style auth container -->
+							<div class="auth-chat-container">
+								<!-- Header -->
+								<div class="auth-chat-header">
+									<div class="flex items-center gap-3">
+										<div class="auth-chat-status"></div>
+										<div>
+											<div class="text-sm font-semibold text-white">
+												{#if $config?.onboarding ?? false}
+													{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+												{:else if mode === 'ldap'}
+													{$i18n.t(`Sign in with LDAP`)}
+												{:else if mode === 'signin'}
+													{$i18n.t(`Sign in to {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+												{:else}
+													{$i18n.t(`Sign up for {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+												{/if}
+											</div>
+											<div class="text-xs text-gray-400">Private, Sovereign AI Assistant</div>
+										</div>
 									</div>
+									<span class="auth-chat-badge">Encrypted</span>
+								</div>
 
+								<!-- Form body -->
+								<form
+									class="auth-chat-body"
+									on:submit={(e) => {
+										e.preventDefault();
+										submitHandler();
+									}}
+								>
 									{#if $config?.onboarding ?? false}
-										<div class="mt-1 text-xs font-medium text-gray-600 dark:text-gray-500">
+										<div class="text-xs text-gray-500 text-center mb-3">
 											ⓘ {$WEBUI_NAME}
 											{$i18n.t(
 												'does not make any external connections, and your data stays securely on your locally hosted server.'
 											)}
 										</div>
 									{/if}
-								</div>
 
-								{#if !$config || $config?.features.enable_login_form || $config?.features.enable_ldap || form}
-									<div class="flex flex-col mt-4">
-										{#if mode === 'signup'}
-											<div class="mb-2">
-												<label for="name" class="text-sm font-medium text-left mb-1 block"
-													>{$i18n.t('Name')}</label
-												>
-												<input
-													bind:value={name}
-													type="text"
-													id="name"
-													class="my-0.5 w-full text-sm outline-hidden bg-white/5 border border-white/10 rounded-lg px-3 py-2 placeholder:text-gray-500 text-white focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition"
-													autocomplete="name"
-													placeholder={$i18n.t('Enter Your Full Name')}
-													required
-												/>
-											</div>
-										{/if}
-
-										{#if mode === 'ldap'}
-											<div class="mb-2">
-												<label for="username" class="text-sm font-medium text-left mb-1 block"
-													>{$i18n.t('Username')}</label
-												>
-												<input
-													bind:value={ldapUsername}
-													type="text"
-													class="my-0.5 w-full text-sm outline-hidden bg-white/5 border border-white/10 rounded-lg px-3 py-2 placeholder:text-gray-500 text-white focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition"
-													autocomplete="username"
-													name="username"
-													id="username"
-													placeholder={$i18n.t('Enter Your Username')}
-													required
-												/>
-											</div>
-										{:else}
-											<div class="mb-2">
-												<label for="email" class="text-sm font-medium text-left mb-1 block"
-													>{$i18n.t('Email')}</label
-												>
-												<input
-													bind:value={email}
-													type="email"
-													id="email"
-													class="my-0.5 w-full text-sm outline-hidden bg-white/5 border border-white/10 rounded-lg px-3 py-2 placeholder:text-gray-500 text-white focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition"
-													autocomplete="email"
-													name="email"
-													placeholder={$i18n.t('Enter Your Email')}
-													required
-												/>
-											</div>
-										{/if}
-
-										<div>
-											<label for="password" class="text-sm font-medium text-left mb-1 block"
-												>{$i18n.t('Password')}</label
-											>
-											<SensitiveInput
-												bind:value={password}
-												type="password"
-												id="password"
-												class="my-0.5 w-full text-sm outline-hidden bg-white/5 border border-white/10 rounded-lg px-3 py-2 placeholder:text-gray-500 text-white focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition"
-												placeholder={$i18n.t('Enter Your Password')}
-												autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
-												name="password"
-												screenReader={true}
-												required
-												aria-required="true"
-											/>
-										</div>
-
-										{#if mode === 'signup' && $config?.features?.enable_signup_password_confirmation}
-											<div class="mt-2">
-												<label
-													for="confirm-password"
-													class="text-sm font-medium text-left mb-1 block"
-													>{$i18n.t('Confirm Password')}</label
-												>
-												<SensitiveInput
-													bind:value={confirmPassword}
-													type="password"
-													id="confirm-password"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent"
-													placeholder={$i18n.t('Confirm Your Password')}
-													autocomplete="new-password"
-													name="confirm-password"
-													required
-												/>
-											</div>
-										{/if}
-									</div>
-								{/if}
-								<div class="mt-5">
 									{#if !$config || $config?.features.enable_login_form || $config?.features.enable_ldap || form}
-										{#if mode === 'ldap'}
-											<button
-												class="bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
-												type="submit"
-											>
-												{$i18n.t('Authenticate')}
-											</button>
-										{:else}
-											<button
-												class="bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
-												type="submit"
-											>
-												{mode === 'signin'
-													? $i18n.t('Sign in')
-													: ($config?.onboarding ?? false)
-														? $i18n.t('Create Admin Account')
-														: $i18n.t('Create Account')}
-											</button>
-
-											{#if (!$config || $config?.features?.enable_signup) && !($config?.onboarding ?? false)}
-												<div class=" mt-4 text-sm text-center">
-													{mode === 'signin'
-														? $i18n.t("Don't have an account?")
-														: $i18n.t('Already have an account?')}
-
-													<button
-														class=" font-medium underline"
-														type="button"
-														on:click={() => {
-															if (mode === 'signin') {
-																mode = 'signup';
-															} else {
-																mode = 'signin';
-															}
-														}}
-													>
-														{mode === 'signin' ? $i18n.t('Sign up') : $i18n.t('Sign in')}
-													</button>
+										<div class="flex flex-col gap-3">
+											{#if mode === 'signup'}
+												<div>
+													<label for="name" class="auth-chat-label">{$i18n.t('Name')}</label>
+													<input
+														bind:value={name}
+														type="text"
+														id="name"
+														class="auth-chat-input"
+														autocomplete="name"
+														placeholder={$i18n.t('Enter Your Full Name')}
+														required
+													/>
 												</div>
 											{/if}
-										{/if}
+
+											{#if mode === 'ldap'}
+												<div>
+													<label for="username" class="auth-chat-label">{$i18n.t('Username')}</label>
+													<input
+														bind:value={ldapUsername}
+														type="text"
+														class="auth-chat-input"
+														autocomplete="username"
+														name="username"
+														id="username"
+														placeholder={$i18n.t('Enter Your Username')}
+														required
+													/>
+												</div>
+											{:else}
+												<div>
+													<label for="email" class="auth-chat-label">{$i18n.t('Email')}</label>
+													<input
+														bind:value={email}
+														type="email"
+														id="email"
+														class="auth-chat-input"
+														autocomplete="email"
+														name="email"
+														placeholder={$i18n.t('Enter Your Email')}
+														required
+													/>
+												</div>
+											{/if}
+
+											<div>
+												<label for="password" class="auth-chat-label">{$i18n.t('Password')}</label>
+												<SensitiveInput
+													bind:value={password}
+													type="password"
+													id="password"
+													class="auth-chat-input"
+													placeholder={$i18n.t('Enter Your Password')}
+													autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
+													name="password"
+													screenReader={true}
+													required
+													aria-required="true"
+												/>
+											</div>
+
+											{#if mode === 'signup' && $config?.features?.enable_signup_password_confirmation}
+												<div>
+													<label for="confirm-password" class="auth-chat-label">{$i18n.t('Confirm Password')}</label>
+													<SensitiveInput
+														bind:value={confirmPassword}
+														type="password"
+														id="confirm-password"
+														class="auth-chat-input"
+														placeholder={$i18n.t('Confirm Your Password')}
+														autocomplete="new-password"
+														name="confirm-password"
+														required
+													/>
+												</div>
+											{/if}
+
+											<!-- Submit button styled like chat send -->
+											<div class="auth-chat-input-wrapper mt-1">
+												<button
+													class="auth-chat-submit"
+													type="submit"
+												>
+													{#if mode === 'ldap'}
+														{$i18n.t('Authenticate')}
+													{:else}
+														{mode === 'signin'
+															? $i18n.t('Sign in')
+															: ($config?.onboarding ?? false)
+																? $i18n.t('Create Admin Account')
+																: $i18n.t('Create Account')}
+													{/if}
+													<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+														<line x1="22" y1="2" x2="11" y2="13" />
+														<polygon points="22 2 15 22 11 13 2 9 22 2" />
+													</svg>
+												</button>
+											</div>
+										</div>
+									{/if}
+								</form>
+
+								<!-- Footer -->
+								<div class="auth-chat-footer">
+									{#if (!$config || $config?.features?.enable_signup) && !($config?.onboarding ?? false)}
+										<span class="text-gray-500">
+											{mode === 'signin'
+												? $i18n.t("Don't have an account?")
+												: $i18n.t('Already have an account?')}
+										</span>
+										<button
+											class="text-cyan-400 hover:text-cyan-300 font-medium transition"
+											type="button"
+											on:click={() => {
+												if (mode === 'signin') {
+													mode = 'signup';
+												} else {
+													mode = 'signin';
+												}
+											}}
+										>
+											{mode === 'signin' ? $i18n.t('Sign up') : $i18n.t('Sign in')}
+										</button>
+									{:else}
+										<span class="text-gray-600">No conversations stored · Decentralized infrastructure</span>
 									{/if}
 								</div>
-							</form>
+							</div>
 
 							{#if Object.keys($config?.oauth?.providers ?? {}).length > 0}
 								<div class="inline-flex items-center justify-center w-full">
@@ -603,11 +596,114 @@
 		pointer-events: none;
 	}
 
-	:global(#auth-page input) {
-		color: white !important;
+	/* Chat-style auth container */
+	:global(.auth-chat-container) {
+		background: #111318;
+		border: 1px solid #252a3a;
+		border-radius: 1rem;
+		overflow: hidden;
+		box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 30px rgba(0,212,255,0.06);
 	}
 
-	:global(#auth-page label) {
-		color: rgba(255,255,255,0.7) !important;
+	:global(.auth-chat-header) {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.875rem 1.25rem;
+		border-bottom: 1px solid #252a3a;
+		background: rgba(255,255,255,0.02);
+	}
+
+	:global(.auth-chat-status) {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #34d399;
+		box-shadow: 0 0 6px rgba(52,211,153,0.5);
+	}
+
+	:global(.auth-chat-badge) {
+		font-size: 0.65rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: #34d399;
+		border: 1px solid rgba(52,211,153,0.3);
+		border-radius: 9999px;
+		padding: 0.2rem 0.6rem;
+	}
+
+	:global(.auth-chat-body) {
+		padding: 1.5rem 1.25rem;
+	}
+
+	:global(.auth-chat-label) {
+		display: block;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: rgba(255,255,255,0.6);
+		margin-bottom: 0.35rem;
+	}
+
+	:global(.auth-chat-input) {
+		width: 100%;
+		font-size: 0.875rem;
+		padding: 0.625rem 0.875rem;
+		background: rgba(255,255,255,0.04);
+		border: 1px solid #252a3a;
+		border-radius: 0.625rem;
+		color: white;
+		outline: none;
+		transition: border-color 180ms, box-shadow 180ms;
+	}
+
+	:global(.auth-chat-input:focus) {
+		border-color: rgba(0,212,255,0.4);
+		box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+	}
+
+	:global(.auth-chat-input::placeholder) {
+		color: #4e5268;
+	}
+
+	:global(.auth-chat-input-wrapper) {
+		position: relative;
+	}
+
+	:global(.auth-chat-submit) {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.75rem;
+		background: rgba(255,255,255,0.06);
+		border: 1px solid #252a3a;
+		border-radius: 0.625rem;
+		color: white;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: background 180ms, border-color 180ms;
+	}
+
+	:global(.auth-chat-submit:hover) {
+		background: rgba(0,212,255,0.08);
+		border-color: rgba(0,212,255,0.3);
+	}
+
+	:global(.auth-chat-footer) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
+		padding: 0.75rem 1.25rem;
+		border-top: 1px solid #252a3a;
+		font-size: 0.75rem;
+		background: rgba(255,255,255,0.01);
+	}
+
+	:global(#auth-page input) {
+		color: white !important;
 	}
 </style>
