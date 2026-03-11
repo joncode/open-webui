@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
 	import './landing.css';
+	import SiteNavbar from '$lib/components/layout/SiteNavbar.svelte';
 
 	const DEMO_RESPONSES = [
 		"I'm agent1.Manifest — a fully sovereign AI running on decentralized compute via **Manifest Network** and **Render Network**. My inference is powered by **Morpheus Network** and **Venice AI**. No conversation is ever stored or logged. How can I help?",
@@ -128,31 +129,7 @@
 	<div class="landing-bg-glow" aria-hidden="true"></div>
 
 	<div class="landing-page-wrapper">
-		<header class="site-header">
-			<div class="header-brand">
-				<img src="/landing/agent1-wordmark.png" alt="agent1.Manifest" class="header-brand-image" />
-				<span class="header-tag">Private AI</span>
-			</div>
-			<a href="/auth" class="header-cta">Sign in</a>
-		</header>
-
-		<div class="partners-banner animate-in">
-			<span class="partners-banner-label">Your Partners in Decentralization</span>
-			<div class="partners-banner-logos">
-				<a href="https://manifest.network" target="_blank" rel="noopener noreferrer" class="partner-banner-link">
-					<img src="/landing/manifest-logo.png" alt="Manifest Network" class="partner-banner-logo partner-banner-logo--colored partner-banner-logo--manifest" />
-				</a>
-				<a href="https://rendernetwork.com" target="_blank" rel="noopener noreferrer" class="partner-banner-link">
-					<img src="/landing/render-logo.svg" alt="Render Network" class="partner-banner-logo" />
-				</a>
-				<a href="https://mor.org" target="_blank" rel="noopener noreferrer" class="partner-banner-link">
-					<img src="/landing/morpheus-og.png" alt="Morpheus" class="partner-banner-logo partner-banner-logo--colored partner-banner-logo--wordmark" />
-				</a>
-				<a href="https://venice.ai" target="_blank" rel="noopener noreferrer" class="partner-banner-link">
-					<img src="/landing/venice-lockup-white.png" alt="Venice AI" class="partner-banner-logo partner-banner-logo--colored partner-banner-logo--tall" />
-				</a>
-			</div>
-		</div>
+		<SiteNavbar />
 
 		<main class="main-content">
 			<section class="hero-section animate-in">

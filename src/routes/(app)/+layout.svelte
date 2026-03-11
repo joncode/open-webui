@@ -41,6 +41,7 @@
 	} from '$lib/stores';
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
+	import SiteNavbar from '$lib/components/layout/SiteNavbar.svelte';
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
 	import ChangelogModal from '$lib/components/ChangelogModal.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
@@ -365,11 +366,14 @@
 {#if $user}
 	<div class="app relative">
 		<div
-			class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
+			class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-hidden flex flex-col"
 		>
 			{#if !['user', 'admin'].includes($user?.role)}
 				<AccountPending />
 			{:else}
+				<SiteNavbar />
+
+				<div class="flex-1 flex flex-row justify-end overflow-auto">
 				{#if localDBChats.length > 0}
 					<div class="fixed w-full h-full flex z-50">
 						<div
@@ -438,6 +442,7 @@
 						<Spinner className="size-5" />
 					</div>
 				{/if}
+			</div>
 			{/if}
 		</div>
 	</div>
