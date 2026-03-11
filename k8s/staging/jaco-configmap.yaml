@@ -48,6 +48,9 @@ data:
   # Content Security Policy
   CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.mor.org wss://agent1-stg.manifest.network; worker-src 'self' blob:; manifest-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'"
 
+  # Default model
+  DEFAULT_MODELS: "venice-uncensored"
+
   # Telemetry off
   ANONYMIZED_TELEMETRY: "false"
   SCARF_NO_ANALYTICS: "true"
