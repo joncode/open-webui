@@ -675,9 +675,17 @@
 								{$i18n.t('No Notes')}
 							</div>
 
-							<div class="mt-1 text-xs text-gray-300 dark:text-gray-700">
-								{$i18n.t('Create your first note by clicking on the plus button below.')}
-							</div>
+							<button
+								class="mt-4 px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-base font-medium transition flex items-center gap-2"
+								on:click={async () => {
+									const res = await createNoteHandler(dayjs().format('YYYY-MM-DD'));
+								}}
+							>
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+								</svg>
+								{$i18n.t('New Note')}
+							</button>
 						</div>
 					</div>
 				{/if}
