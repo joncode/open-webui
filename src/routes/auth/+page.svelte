@@ -567,7 +567,7 @@
 				<div class="auth-logo-container">
 					<img
 						src="/landing/agent1-wordmark.png"
-						class="h-[3.75rem] w-auto max-w-[330px]"
+						class="h-[4.7rem] w-auto max-w-[410px]"
 						alt="{$WEBUI_NAME} logo"
 					/>
 				</div>
