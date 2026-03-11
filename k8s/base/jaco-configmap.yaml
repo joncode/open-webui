@@ -55,7 +55,18 @@ data:
   # Default model
   DEFAULT_MODELS: "venice-uncensored"
 
-  # Telemetry off
+  # Privacy & telemetry
   ANONYMIZED_TELEMETRY: "false"
   SCARF_NO_ANALYTICS: "true"
   DO_NOT_TRACK: "true"
+  ENABLE_VERSION_UPDATE_CHECK: "false"
+  ENABLE_COMMUNITY_SHARING: "false"
+  ENABLE_MESSAGE_RATING: "false"
+  ENABLE_EVALUATION_ARENA_MODELS: "false"
+
+  # Offline / no phone home
+  OFFLINE_MODE: "true"
+  HF_HUB_OFFLINE: "1"
+  RAG_EMBEDDING_MODEL_AUTO_UPDATE: "false"
+  RAG_RERANKING_MODEL_AUTO_UPDATE: "false"
+  WHISPER_MODEL_AUTO_UPDATE: "false"

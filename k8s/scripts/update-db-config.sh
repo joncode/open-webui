@@ -39,12 +39,19 @@ with get_db() as db:
         # Set default model
         data.setdefault('ui', {})
         data['ui']['default_models'] = 'venice-uncensored'
+        data['ui']['enable_community_sharing'] = False
+        data['ui']['enable_message_rating'] = False
+        data['ui']['prompt_suggestions'] = []
 
         # Ensure OpenAI API is enabled
         data.setdefault('openai', {})
         data['openai']['enable'] = True
 
-        # Disable version check
+        # Disable evaluation arena
+        data.setdefault('evaluation', {})
+        data['evaluation'].setdefault('arena', {})
+        data['evaluation']['arena']['enable'] = False
+
         data.setdefault('general', {})
 
         db.execute(

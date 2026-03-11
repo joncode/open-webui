@@ -919,7 +919,7 @@ SENTENCE_TRANSFORMERS_CROSS_ENCODER_SIGMOID_ACTIVATION_FUNCTION = (
 
 # Disabled — Agent1 manages its own releases, never phone home to open-webui
 ENABLE_VERSION_UPDATE_CHECK = False
-OFFLINE_MODE = os.environ.get("OFFLINE_MODE", "false").lower() == "true"
+OFFLINE_MODE = os.environ.get("OFFLINE_MODE", "true").lower() == "true"
 
 if OFFLINE_MODE:
     os.environ["HF_HUB_OFFLINE"] = "1"

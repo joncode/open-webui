@@ -1300,7 +1300,7 @@ if default_prompt_suggestions == []:
 DEFAULT_PROMPT_SUGGESTIONS = PersistentConfig(
     "DEFAULT_PROMPT_SUGGESTIONS",
     "ui.prompt_suggestions",
-    default_prompt_suggestions,
+    [],  # Agent1: no default prompt suggestions
 )
 
 MODEL_ORDER_LIST = PersistentConfig(
@@ -1723,7 +1723,7 @@ ENABLE_USER_STATUS = PersistentConfig(
 ENABLE_EVALUATION_ARENA_MODELS = PersistentConfig(
     "ENABLE_EVALUATION_ARENA_MODELS",
     "evaluation.arena.enable",
-    os.environ.get("ENABLE_EVALUATION_ARENA_MODELS", "True").lower() == "true",
+    os.environ.get("ENABLE_EVALUATION_ARENA_MODELS", "False").lower() == "true",
 )
 EVALUATION_ARENA_MODELS = PersistentConfig(
     "EVALUATION_ARENA_MODELS",
@@ -1770,13 +1770,13 @@ ENABLE_ADMIN_ANALYTICS = (
 ENABLE_COMMUNITY_SHARING = PersistentConfig(
     "ENABLE_COMMUNITY_SHARING",
     "ui.enable_community_sharing",
-    os.environ.get("ENABLE_COMMUNITY_SHARING", "True").lower() == "true",
+    os.environ.get("ENABLE_COMMUNITY_SHARING", "False").lower() == "true",
 )
 
 ENABLE_MESSAGE_RATING = PersistentConfig(
     "ENABLE_MESSAGE_RATING",
     "ui.enable_message_rating",
-    os.environ.get("ENABLE_MESSAGE_RATING", "True").lower() == "true",
+    os.environ.get("ENABLE_MESSAGE_RATING", "False").lower() == "true",
 )
 
 ENABLE_USER_WEBHOOKS = PersistentConfig(
@@ -3061,7 +3061,7 @@ log.info(f"Embedding model set: {RAG_EMBEDDING_MODEL.value}")
 
 RAG_EMBEDDING_MODEL_AUTO_UPDATE = (
     not OFFLINE_MODE
-    and os.environ.get("RAG_EMBEDDING_MODEL_AUTO_UPDATE", "True").lower() == "true"
+    and os.environ.get("RAG_EMBEDDING_MODEL_AUTO_UPDATE", "False").lower() == "true"
 )
 
 RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE = (
@@ -3114,7 +3114,7 @@ if RAG_RERANKING_MODEL.value != "":
 
 RAG_RERANKING_MODEL_AUTO_UPDATE = (
     not OFFLINE_MODE
-    and os.environ.get("RAG_RERANKING_MODEL_AUTO_UPDATE", "True").lower() == "true"
+    and os.environ.get("RAG_RERANKING_MODEL_AUTO_UPDATE", "False").lower() == "true"
 )
 
 RAG_RERANKING_MODEL_TRUST_REMOTE_CODE = (
