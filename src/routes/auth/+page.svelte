@@ -648,18 +648,20 @@
 	:global(.auth-chat-input) {
 		width: 100%;
 		font-size: 0.875rem;
-		padding: 0.625rem 0.875rem;
-		background: rgba(255,255,255,0.04);
+		padding: 0.65rem 0.875rem;
+		background: #0a0b0f;
 		border: 1px solid #252a3a;
-		border-radius: 0.625rem;
-		color: white;
+		border-radius: 1rem;
+		color: #e8eaf0;
 		outline: none;
-		transition: border-color 180ms, box-shadow 180ms;
+		line-height: 1.5;
+		font-family: 'General Sans', system-ui, sans-serif;
+		transition: border-color 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1);
 	}
 
 	:global(.auth-chat-input:focus) {
-		border-color: rgba(0,212,255,0.4);
-		box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+		border-color: #0099bb;
+		box-shadow: 0 0 0 3px rgba(0,212,255,0.12);
 	}
 
 	:global(.auth-chat-input::placeholder) {
@@ -676,20 +678,21 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		padding: 0.75rem;
-		background: rgba(255,255,255,0.06);
+		padding: 0.65rem 0.875rem;
+		background: #0a0b0f;
 		border: 1px solid #252a3a;
-		border-radius: 0.625rem;
-		color: white;
+		border-radius: 1rem;
+		color: #e8eaf0;
 		font-size: 0.875rem;
 		font-weight: 500;
+		font-family: 'General Sans', system-ui, sans-serif;
 		cursor: pointer;
-		transition: background 180ms, border-color 180ms;
+		transition: border-color 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1);
 	}
 
 	:global(.auth-chat-submit:hover) {
-		background: rgba(0,212,255,0.08);
-		border-color: rgba(0,212,255,0.3);
+		border-color: #0099bb;
+		box-shadow: 0 0 0 3px rgba(0,212,255,0.12);
 	}
 
 	:global(.auth-chat-footer) {
