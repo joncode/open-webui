@@ -310,7 +310,9 @@
 													bind:value={password}
 													type="password"
 													id="password"
-													class="auth-chat-input"
+													outerClassName="auth-chat-input flex items-center"
+													inputClassName="w-full bg-transparent text-sm outline-none text-white placeholder:text-[#4e5268]"
+													showButtonClassName="pl-2 text-gray-500 hover:text-gray-300 transition"
 													placeholder={$i18n.t('Enter Your Password')}
 													autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
 													name="password"
@@ -327,7 +329,9 @@
 														bind:value={confirmPassword}
 														type="password"
 														id="confirm-password"
-														class="auth-chat-input"
+														outerClassName="auth-chat-input flex items-center"
+														inputClassName="w-full bg-transparent text-sm outline-none text-white placeholder:text-[#4e5268]"
+														showButtonClassName="pl-2 text-gray-500 hover:text-gray-300 transition"
 														placeholder={$i18n.t('Confirm Your Password')}
 														autocomplete="new-password"
 														name="confirm-password"
@@ -560,14 +564,12 @@
 
 		{#if !$config?.metadata?.auth_logo_position}
 			<div class="fixed m-10 z-50">
-				<div class="flex space-x-2">
-					<div class=" self-center">
-						<img
-							src="/landing/agent1-wordmark.png"
-							class="h-[3.75rem] w-auto max-w-[330px]"
-							alt="{$WEBUI_NAME} logo"
-						/>
-					</div>
+				<div class="auth-logo-container">
+					<img
+						src="/landing/agent1-wordmark.png"
+						class="h-[3.75rem] w-auto max-w-[330px]"
+						alt="{$WEBUI_NAME} logo"
+					/>
 				</div>
 			</div>
 		{/if}
@@ -706,7 +708,25 @@
 		background: rgba(255,255,255,0.01);
 	}
 
+	:global(.auth-logo-container) {
+		border: 1px solid #252a3a;
+		border-radius: 1rem;
+		padding: 0.5rem 1rem;
+		background: rgba(17,19,24,0.8);
+		backdrop-filter: blur(8px);
+	}
+
 	:global(#auth-page input) {
-		color: white !important;
+		color: #e8eaf0 !important;
+		background: transparent !important;
+	}
+
+	:global(#auth-page input:-webkit-autofill),
+	:global(#auth-page input:-webkit-autofill:hover),
+	:global(#auth-page input:-webkit-autofill:focus) {
+		-webkit-text-fill-color: #e8eaf0 !important;
+		-webkit-box-shadow: 0 0 0 1000px #0a0b0f inset !important;
+		background-color: #0a0b0f !important;
+		caret-color: #e8eaf0;
 	}
 </style>
