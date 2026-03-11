@@ -22,12 +22,30 @@
 </script>
 
 <div class="site-navbar">
-	<!-- Header row -->
 	<header class="site-navbar-header">
 		<a href="/" class="site-navbar-brand">
 			<img src="/landing/agent1-wordmark.png" alt="agent1.Manifest" class="site-navbar-logo" />
 			<span class="site-navbar-tag">Private AI</span>
 		</a>
+
+		<!-- Partners -->
+		<div class="site-navbar-partners">
+			<span class="site-navbar-partners-label">Your Partners in Decentralization</span>
+			<div class="site-navbar-partners-logos">
+				<a href="https://manifest.network" target="_blank" rel="noopener noreferrer" class="site-navbar-partner-link">
+					<img src="/landing/manifest-logo.png" alt="Manifest Network" class="site-navbar-partner-logo site-navbar-partner-logo--colored site-navbar-partner-logo--manifest" />
+				</a>
+				<a href="https://rendernetwork.com" target="_blank" rel="noopener noreferrer" class="site-navbar-partner-link">
+					<img src="/landing/render-logo.svg" alt="Render Network" class="site-navbar-partner-logo" />
+				</a>
+				<a href="https://mor.org" target="_blank" rel="noopener noreferrer" class="site-navbar-partner-link">
+					<img src="/landing/morpheus-og.png" alt="Morpheus" class="site-navbar-partner-logo site-navbar-partner-logo--colored site-navbar-partner-logo--wordmark" />
+				</a>
+				<a href="https://venice.ai" target="_blank" rel="noopener noreferrer" class="site-navbar-partner-link">
+					<img src="/landing/venice-lockup-white.png" alt="Venice AI" class="site-navbar-partner-logo site-navbar-partner-logo--colored site-navbar-partner-logo--tall" />
+				</a>
+			</div>
+		</div>
 
 		<div class="site-navbar-actions">
 			{#if $user}
@@ -100,24 +118,7 @@
 		</div>
 	</header>
 
-	<!-- Partners banner -->
-	<div class="site-navbar-partners">
-		<span class="site-navbar-partners-label">Your Partners in Decentralization</span>
-		<div class="site-navbar-partners-logos">
-			<a href="https://manifest.network" target="_blank" rel="noopener noreferrer" class="site-navbar-partner-link">
-				<img src="/landing/manifest-logo.png" alt="Manifest Network" class="site-navbar-partner-logo site-navbar-partner-logo--colored site-navbar-partner-logo--manifest" />
-			</a>
-			<a href="https://rendernetwork.com" target="_blank" rel="noopener noreferrer" class="site-navbar-partner-link">
-				<img src="/landing/render-logo.svg" alt="Render Network" class="site-navbar-partner-logo" />
-			</a>
-			<a href="https://mor.org" target="_blank" rel="noopener noreferrer" class="site-navbar-partner-link">
-				<img src="/landing/morpheus-og.png" alt="Morpheus" class="site-navbar-partner-logo site-navbar-partner-logo--colored site-navbar-partner-logo--wordmark" />
-			</a>
-			<a href="https://venice.ai" target="_blank" rel="noopener noreferrer" class="site-navbar-partner-link">
-				<img src="/landing/venice-lockup-white.png" alt="Venice AI" class="site-navbar-partner-logo site-navbar-partner-logo--colored site-navbar-partner-logo--tall" />
-			</a>
-		</div>
-	</div>
+
 </div>
 
 <style>
@@ -220,31 +221,26 @@
 		border-color: #0099bb;
 	}
 
-	/* Partners banner */
+	/* Partners (inline in header) */
 	.site-navbar-partners {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
-		gap: 0.75rem;
-		padding: 1.25rem 1rem;
-		background: linear-gradient(180deg, rgba(0, 212, 255, 0.04) 0%, transparent 100%);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		gap: 1rem;
 	}
 
 	.site-navbar-partners-label {
-		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.35);
+		font-size: 0.65rem;
+		color: rgba(255, 255, 255, 0.3);
 		text-transform: uppercase;
-		letter-spacing: 0.12em;
+		letter-spacing: 0.1em;
 		font-weight: 600;
+		white-space: nowrap;
 	}
 
 	.site-navbar-partners-logos {
 		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
 		align-items: center;
-		gap: 2rem;
+		gap: 1.25rem;
 	}
 
 	.site-navbar-partner-link {
@@ -261,15 +257,15 @@
 	}
 
 	.site-navbar-partner-logo {
-		height: 36px;
+		height: 22px;
 		width: auto;
-		max-width: 200px;
+		max-width: 140px;
 		object-fit: contain;
 		filter: brightness(0) invert(1);
 	}
 
 	.site-navbar-partner-logo--tall {
-		height: 48px;
+		height: 28px;
 	}
 
 	.site-navbar-partner-logo--colored {
@@ -277,32 +273,29 @@
 	}
 
 	.site-navbar-partner-logo--manifest {
-		height: 51px;
-		max-width: 306px;
+		height: 30px;
+		max-width: 180px;
 	}
 
 	.site-navbar-partner-logo--wordmark {
-		height: 24px;
+		height: 16px;
 		width: auto;
 	}
 
 	/* Responsive */
+	@media (max-width: 1024px) {
+		.site-navbar-partners-label {
+			display: none;
+		}
+	}
+
 	@media (max-width: 768px) {
 		.site-navbar-logo {
 			height: 46px;
 		}
 
-		.site-navbar-partners-logos {
-			gap: 1.25rem;
-		}
-
-		.site-navbar-partner-logo {
-			height: 28px;
-		}
-
-		.site-navbar-partner-logo--manifest {
-			height: 37px;
-			max-width: 238px;
+		.site-navbar-partners {
+			display: none;
 		}
 	}
 
