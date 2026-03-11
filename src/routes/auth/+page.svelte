@@ -183,15 +183,23 @@
 	}}
 />
 
+<svelte:head>
+	<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
+</svelte:head>
+
 <div class="w-full h-screen max-h-[100dvh] text-white relative" id="auth-page">
-	<div class="w-full h-full absolute top-0 left-0 bg-white dark:bg-black"></div>
+	<!-- Landing-style background -->
+	<div class="w-full h-full absolute top-0 left-0" style="background: #0a0f1a;"></div>
+	<div class="auth-bg-grid" aria-hidden="true"></div>
+	<div class="auth-bg-glow" aria-hidden="true"></div>
 
 	<div class="w-full absolute top-0 left-0 right-0 h-8 drag-region"></div>
 
 	{#if loaded}
 		<div
-			class="fixed bg-transparent min-h-screen w-full flex justify-center font-primary z-50 text-black dark:text-white"
+			class="fixed bg-transparent min-h-screen w-full flex justify-center font-primary z-50 text-white"
 			id="auth-container"
+			style="font-family: 'General Sans', system-ui, sans-serif;"
 		>
 			<div class="w-full px-10 min-h-screen flex flex-col text-center">
 				{#if ($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false}
@@ -210,7 +218,7 @@
 					</div>
 				{:else}
 					<div class="my-auto flex flex-col justify-center items-center">
-						<div class=" sm:max-w-md my-auto pb-10 w-full dark:text-gray-100">
+						<div class=" sm:max-w-md my-auto pb-10 w-full text-gray-100">
 							{#if $config?.metadata?.auth_logo_position === 'center'}
 								<div class="flex justify-center mb-6">
 									<img
@@ -229,7 +237,7 @@
 								}}
 							>
 								<div class="mb-1">
-									<div class=" text-2xl font-medium">
+									<div class=" text-2xl font-semibold text-white">
 										{#if $config?.onboarding ?? false}
 											{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
 										{:else if mode === 'ldap'}
@@ -262,7 +270,7 @@
 													bind:value={name}
 													type="text"
 													id="name"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class="my-0.5 w-full text-sm outline-hidden bg-white/5 border border-white/10 rounded-lg px-3 py-2 placeholder:text-gray-500 text-white focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition"
 													autocomplete="name"
 													placeholder={$i18n.t('Enter Your Full Name')}
 													required
@@ -278,7 +286,7 @@
 												<input
 													bind:value={ldapUsername}
 													type="text"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class="my-0.5 w-full text-sm outline-hidden bg-white/5 border border-white/10 rounded-lg px-3 py-2 placeholder:text-gray-500 text-white focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition"
 													autocomplete="username"
 													name="username"
 													id="username"
@@ -295,7 +303,7 @@
 													bind:value={email}
 													type="email"
 													id="email"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class="my-0.5 w-full text-sm outline-hidden bg-white/5 border border-white/10 rounded-lg px-3 py-2 placeholder:text-gray-500 text-white focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition"
 													autocomplete="email"
 													name="email"
 													placeholder={$i18n.t('Enter Your Email')}
@@ -312,7 +320,7 @@
 												bind:value={password}
 												type="password"
 												id="password"
-												class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+												class="my-0.5 w-full text-sm outline-hidden bg-white/5 border border-white/10 rounded-lg px-3 py-2 placeholder:text-gray-500 text-white focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition"
 												placeholder={$i18n.t('Enter Your Password')}
 												autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
 												name="password"
@@ -347,14 +355,14 @@
 									{#if !$config || $config?.features.enable_login_form || $config?.features.enable_ldap || form}
 										{#if mode === 'ldap'}
 											<button
-												class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+												class="bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
 												type="submit"
 											>
 												{$i18n.t('Authenticate')}
 											</button>
 										{:else}
 											<button
-												class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+												class="bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
 												type="submit"
 											>
 												{mode === 'signin'
@@ -405,7 +413,7 @@
 								<div class="flex flex-col space-y-2">
 									{#if $config?.oauth?.providers?.google}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="flex justify-center items-center bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/google/login`;
 											}}
@@ -435,7 +443,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.microsoft}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="flex justify-center items-center bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/microsoft/login`;
 											}}
@@ -466,7 +474,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.github}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="flex justify-center items-center bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/github/login`;
 											}}
@@ -487,7 +495,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.oidc}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="flex justify-center items-center bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
 											}}
@@ -517,7 +525,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.feishu}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="flex justify-center items-center bg-white text-gray-900 hover:bg-gray-100 transition w-full rounded-xl font-semibold text-sm py-3 shadow-lg"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/feishu/login`;
 											}}
@@ -565,9 +573,8 @@
 				<div class="flex space-x-2">
 					<div class=" self-center">
 						<img
-							crossorigin="anonymous"
 							src="/landing/agent1-wordmark.png"
-							class="h-10 w-auto max-w-[220px]"
+							class="h-[3.75rem] w-auto max-w-[330px]"
 							alt="{$WEBUI_NAME} logo"
 						/>
 					</div>
@@ -576,3 +583,34 @@
 		{/if}
 	{/if}
 </div>
+
+<style>
+	.auth-bg-grid {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+		background-size: 60px 60px;
+		pointer-events: none;
+	}
+
+	.auth-bg-glow {
+		position: absolute;
+		top: -30%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 800px;
+		height: 800px;
+		background: radial-gradient(circle, rgba(0,200,255,0.08) 0%, rgba(0,100,255,0.04) 40%, transparent 70%);
+		pointer-events: none;
+	}
+
+	:global(#auth-page input) {
+		color: white !important;
+	}
+
+	:global(#auth-page label) {
+		color: rgba(255,255,255,0.7) !important;
+	}
+</style>
