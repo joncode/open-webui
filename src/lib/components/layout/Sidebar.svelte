@@ -387,6 +387,7 @@
 	const MAX_WIDTH = 480;
 
 	let isResizing = false;
+	let sidebarAnimating = false;
 
 	let startWidth = 0;
 	let startClientX = 0;
@@ -681,7 +682,7 @@
 	}}
 />
 
-{#if !$mobile && !$showSidebar}
+{#if !$mobile && !$showSidebar && !sidebarAnimating}
 	<div
 		class=" pt-[7px] pb-2 px-2 flex flex-col justify-between text-black dark:text-white hover:bg-gray-50/30 dark:hover:bg-gray-950/30 h-full z-10 transition-all border-e-[0.5px] border-gray-50 dark:border-gray-850/30"
 		id="sidebar"
@@ -876,19 +877,17 @@
 	<div
 		bind:this={navElement}
 		id="sidebar"
-		class="h-full select-none {$showSidebar
-			? `${$mobile ? 'bg-gray-50 dark:bg-gray-950' : 'bg-gray-50/70 dark:bg-gray-950/70'} z-50`
-			: ' bg-transparent z-0 '} {$isApp
+		class="h-full select-none {$mobile ? 'bg-gray-50 dark:bg-gray-950' : 'bg-gray-50/70 dark:bg-gray-950/70'} z-50 {$isApp
 			? `ml-[4.5rem] md:ml-0 `
-			: ' transition-all duration-300 '} shrink-0 text-gray-900 dark:text-gray-200 text-sm overflow-x-hidden
+			: ''} shrink-0 max-w-full text-gray-900 dark:text-gray-200 text-sm overflow-hidden
         "
-		transition:slide={{ duration: 250, axis: 'x' }}
+		transition:slide|local={{ duration: 200, axis: 'x' }}
+		on:outrostart={() => (sidebarAnimating = true)}
+		on:outroend={() => (sidebarAnimating = false)}
 		data-state={$showSidebar}
 	>
 		<div
-			class=" my-auto flex flex-col justify-between h-full w-[var(--sidebar-width)] overflow-x-hidden scrollbar-hidden z-50 {$showSidebar
-				? ''
-				: 'invisible'}"
+			class=" my-auto flex flex-col justify-between h-full w-[var(--sidebar-width)] max-w-full overflow-x-hidden scrollbar-hidden z-50"
 		>
 			<div
 				class="sidebar px-[0.5625rem] pt-2 pb-1.5 flex justify-between space-x-1 text-gray-600 dark:text-gray-400 sticky top-0 z-10 -mb-3"
@@ -1384,9 +1383,9 @@
 				</Folder>
 			</div>
 
-			<div class="px-1.5 pt-1.5 pb-2 sticky bottom-0 z-10 -mt-3 sidebar">
+			<div class="px-1.5 pt-1.5 pb-2 sticky bottom-0 z-10 -mt-3 sidebar {$mobile ? 'bg-gray-50 dark:bg-gray-950' : 'bg-gray-50/70 dark:bg-gray-950/70'}">
 				<div
-					class=" sidebar-bg-gradient-to-t bg-linear-to-t from-gray-50 dark:from-gray-950 to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mt-6"
+					class=" sidebar-bg-gradient-to-t bg-linear-to-t {$mobile ? 'from-gray-50 dark:from-gray-950' : 'from-gray-50/70 dark:from-gray-950/70'} to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mt-6"
 				></div>
 				<div class="flex flex-col font-primary">
 					{#if $user !== undefined && $user !== null}

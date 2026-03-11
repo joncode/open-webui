@@ -131,6 +131,24 @@
 	<div class="landing-page-wrapper">
 		<SiteNavbar />
 
+		<div class="landing-partners-mobile animate-in">
+			<span class="landing-partners-mobile-label">Your Partners in Decentralization</span>
+			<div class="landing-partners-mobile-logos">
+				<a href="https://manifest.network" target="_blank" rel="noopener noreferrer">
+					<img src="/landing/manifest-logo.png" alt="Manifest Network" class="landing-partners-mobile-logo landing-partners-mobile-logo--manifest" />
+				</a>
+				<a href="https://rendernetwork.com" target="_blank" rel="noopener noreferrer">
+					<img src="/landing/render-logo.svg" alt="Render Network" class="landing-partners-mobile-logo" />
+				</a>
+				<a href="https://mor.org" target="_blank" rel="noopener noreferrer">
+					<img src="/landing/morpheus-og.png" alt="Morpheus" class="landing-partners-mobile-logo landing-partners-mobile-logo--wordmark" />
+				</a>
+				<a href="https://venice.ai" target="_blank" rel="noopener noreferrer">
+					<img src="/landing/venice-lockup-white.png" alt="Venice AI" class="landing-partners-mobile-logo landing-partners-mobile-logo--tall" />
+				</a>
+			</div>
+		</div>
+
 		<main class="main-content">
 			<section class="hero-section animate-in">
 				<div class="cost-badge">

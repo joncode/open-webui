@@ -146,6 +146,8 @@
 		align-items: center;
 		gap: 0.75rem;
 		text-decoration: none;
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 
 	.site-navbar-logo {
@@ -265,7 +267,7 @@
 	}
 
 	.site-navbar-partner-logo--tall {
-		height: 38.5px;
+		height: 42.5px;
 	}
 
 	.site-navbar-partner-logo--colored {
@@ -278,12 +280,16 @@
 	}
 
 	.site-navbar-partner-logo--wordmark {
-		height: 26px;
+		height: 28.5px;
 		width: auto;
 	}
 
 	/* Responsive */
-	@media (max-width: 1024px) {
+	@media (max-width: 1200px) {
+		.site-navbar-tag {
+			display: none;
+		}
+
 		.site-navbar-partners-label {
 			display: none;
 		}

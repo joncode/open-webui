@@ -790,3 +790,67 @@
     padding: var(--landing-space-3);
   }
 }
+
+/* ── Mobile partner logos strip (visible only when navbar partners are hidden) ── */
+
+.landing .landing-partners-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .landing .landing-partners-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .landing .landing-partners-mobile-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .landing .landing-partners-mobile-logos {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .landing .landing-partners-mobile-logos a {
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+  }
+
+  .landing .landing-partners-mobile-logos a:hover {
+    opacity: 1;
+  }
+
+  .landing .landing-partners-mobile-logo {
+    height: 24px;
+    width: auto;
+    filter: brightness(0) invert(1);
+  }
+
+  .landing .landing-partners-mobile-logo--manifest {
+    height: 32px;
+    filter: none;
+  }
+
+  .landing .landing-partners-mobile-logo--wordmark {
+    height: 24px;
+    filter: brightness(0) invert(1);
+  }
+
+  .landing .landing-partners-mobile-logo--tall {
+    height: 34px;
+    filter: brightness(0) invert(1);
+  }
+}
