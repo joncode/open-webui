@@ -813,14 +813,7 @@
 									theme: 'transparent',
 									offset: [-12, 4]
 								},
-								shouldShow: ({ editor, view, state, oldState }) => {
-									// safety check
-									if (!editor || !editor.view || editor.isDestroyed) {
-										return false;
-									}
-									// default logic
-									return editor.isActive('paragraph');
-								}
+								shouldShow: () => false
 							})
 						]
 					: []),
