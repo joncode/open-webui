@@ -1223,11 +1223,13 @@
 </script>
 
 {#if richText && showFormattingToolbar}
-	<div bind:this={bubbleMenuElement} id="bubble-menu" class="p-0 {editor ? '' : 'hidden'}">
+	<!-- These elements are positioned by Tippy.js via tiptap BubbleMenu/FloatingMenu extensions.
+	     They must exist in the DOM but stay hidden until Tippy takes control. -->
+	<div bind:this={bubbleMenuElement} id="bubble-menu" class="p-0" style="visibility: hidden; position: absolute;">
 		<FormattingButtons {editor} />
 	</div>
 
-	<div bind:this={floatingMenuElement} id="floating-menu" class="p-0 {editor ? '' : 'hidden'}">
+	<div bind:this={floatingMenuElement} id="floating-menu" class="p-0" style="visibility: hidden; position: absolute;">
 		<FormattingButtons {editor} />
 	</div>
 {/if}
