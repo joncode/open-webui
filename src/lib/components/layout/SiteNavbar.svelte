@@ -257,15 +257,15 @@
 	}
 
 	.site-navbar-partner-logo {
-		height: 22px;
+		height: 27.5px;
 		width: auto;
-		max-width: 140px;
+		max-width: 175px;
 		object-fit: contain;
 		filter: brightness(0) invert(1);
 	}
 
 	.site-navbar-partner-logo--tall {
-		height: 28px;
+		height: 38.5px;
 	}
 
 	.site-navbar-partner-logo--colored {
@@ -273,12 +273,12 @@
 	}
 
 	.site-navbar-partner-logo--manifest {
-		height: 30px;
-		max-width: 180px;
+		height: 37.5px;
+		max-width: 225px;
 	}
 
 	.site-navbar-partner-logo--wordmark {
-		height: 16px;
+		height: 26px;
 		width: auto;
 	}
 

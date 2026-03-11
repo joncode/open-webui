@@ -373,7 +373,7 @@
 			{:else}
 				<SiteNavbar />
 
-				<div class="flex-1 flex flex-row justify-end overflow-auto">
+				<div class="flex-1 flex flex-row justify-end overflow-auto relative">
 				{#if localDBChats.length > 0}
 					<div class="fixed w-full h-full flex z-50">
 						<div
