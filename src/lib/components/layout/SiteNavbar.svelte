@@ -102,6 +102,7 @@
 					className="max-w-[240px]"
 					role={$user?.role}
 					help={true}
+					side="bottom"
 					on:show={(e) => {
 						if (e.detail === 'archived-chat') {
 							showArchivedChats.set(true);
@@ -267,7 +268,9 @@
 	}
 
 	.site-navbar-partner-logo--tall {
-		height: 42.5px;
+		height: 47px;
+		position: relative;
+		top: 2px;
 	}
 
 	.site-navbar-partner-logo--colored {
@@ -275,8 +278,8 @@
 	}
 
 	.site-navbar-partner-logo--manifest {
-		height: 37.5px;
-		max-width: 225px;
+		height: 41px;
+		max-width: 248px;
 	}
 
 	.site-navbar-partner-logo--wordmark {

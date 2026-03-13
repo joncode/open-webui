@@ -1,15 +1,11 @@
 <script lang="ts">
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import './landing.css';
 	import SiteNavbar from '$lib/components/layout/SiteNavbar.svelte';
+	import { WEBUI_BASE_URL } from '$lib/constants';
 
-	const DEMO_RESPONSES = [
-		"I'm agent1.Manifest — a fully sovereign AI running on decentralized compute via **Manifest Network** and **Render Network**. My inference is powered by **Morpheus Network** and **Venice AI**. No conversation is ever stored or logged. How can I help?",
-		"Great question. Because I run on decentralized GPU infrastructure, there is no single point of control or failure. Your data never touches a centralized server — everything is processed across a distributed network of nodes.",
-		"Absolutely. Unlike traditional AI services, I don't retain any chat history. Once you close this window, the conversation is gone. That's the benefit of sovereign, privacy-first design.",
-		"I was created by **Sarson Funds** to demonstrate what no-cost, private, uncensored AI looks like when built on decentralized infrastructure. agent1.Manifest represents the future of fully sovereign AI for every user.",
-		"The premium LLM models I use are provided through **Morpheus Network** and **Venice AI**, ensuring high-quality, uncensored responses without centralized gatekeeping."
-	];
+	const CTA_MARKER = '[CTA_BUTTON]';
+	const CTA_HTML = `<a href="/auth" class="landing-cta-button">🚀 Log in now and give it a shot!</a>`;
 
 	type Message = { role: 'user' | 'assistant'; text: string; html?: string };
 
@@ -17,19 +13,22 @@
 	let messages: Message[] = [
 		{
 			role: 'assistant',
-			text: '',
+			text: 'Welcome to agent1.Manifest — your private, sovereign AI assistant. I run on decentralized infrastructure with no stored conversations.\n\nHow can I help you today?',
 			html: '<p>Welcome to <strong>agent1.Manifest</strong> — your private, sovereign AI assistant. I run on decentralized infrastructure with no stored conversations.</p><p>How can I help you today?</p>'
 		}
 	];
 	let showTyping = false;
 	let isBusy = false;
-	let responseIndex = 0;
 	let chatMessagesEl: HTMLDivElement;
-	let typingTimeout: ReturnType<typeof setTimeout>;
-	let typingInterval: ReturnType<typeof setInterval>;
+	let abortController: AbortController | null = null;
 
 	function renderMarkdown(text: string): string {
-		const html = text
+		// Strip CTA markers for intermediate rendering, inject button HTML
+		let processed = text;
+		const hasCta = processed.includes(CTA_MARKER);
+		processed = processed.replace(CTA_MARKER, '');
+
+		const html = processed
 			.replace(/&/g, '&amp;')
 			.replace(/</g, '&lt;')
 			.replace(/>/g, '&gt;')
@@ -37,7 +36,12 @@
 			.replace(/`(.*?)`/g, '<code>$1</code>')
 			.replace(/\n\n/g, '</p><p>')
 			.replace(/\n/g, '<br>');
-		return '<p>' + html + '</p>';
+
+		let result = '<p>' + html + '</p>';
+		if (hasCta) {
+			result += CTA_HTML;
+		}
+		return result;
 	}
 
 	function scrollToBottom() {
@@ -48,7 +52,20 @@
 		});
 	}
 
-	function sendMessage() {
+	/**
+	 * Build the messages array for the API call.
+	 * Only sends user/assistant messages (system prompt is injected server-side).
+	 */
+	function buildApiMessages(): { role: string; content: string }[] {
+		return messages
+			.filter((m) => m.text) // skip empty initial welcome if needed
+			.map((m) => ({
+				role: m.role,
+				content: m.text
+			}));
+	}
+
+	async function sendMessage() {
 		const text = chatInput.trim();
 		if (!text || isBusy) return;
 
@@ -58,40 +75,100 @@
 		showTyping = true;
 		scrollToBottom();
 
-		const delay = 800 + Math.random() * 1200;
-		typingTimeout = setTimeout(() => {
-			showTyping = false;
-			const reply = DEMO_RESPONSES[responseIndex % DEMO_RESPONSES.length];
-			responseIndex += 1;
+		const apiMessages = buildApiMessages();
 
-			// Type out the response character by character
-			let i = 0;
-			const fullHtml = renderMarkdown(reply);
-			const plainReply = reply;
+		try {
+			abortController = new AbortController();
+
+			const res = await fetch(`${WEBUI_BASE_URL}/api/landing/chat`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ messages: apiMessages, stream: true }),
+				signal: abortController.signal
+			});
+
+			showTyping = false;
+
+			if (!res.ok) {
+				const errorText = res.status === 429
+					? "I'm getting a lot of questions right now — please try again in a moment."
+					: "Something went wrong connecting to the AI. Please try again.";
+				messages = [...messages, { role: 'assistant', text: errorText, html: `<p>${errorText}</p>` }];
+				isBusy = false;
+				scrollToBottom();
+				return;
+			}
+
+			// Create the assistant message placeholder
 			const assistantMessage: Message = { role: 'assistant', text: '', html: '<p></p>' };
 			messages = [...messages, assistantMessage];
 			scrollToBottom();
 
-			typingInterval = setInterval(() => {
-				i += 1;
-				if (i <= plainReply.length) {
-					const slice = plainReply.slice(0, i);
-					const html = renderMarkdown(slice);
-					messages = messages.map((m, idx) =>
-						idx === messages.length - 1 ? { ...m, html } : m
-					);
-					scrollToBottom();
-				} else {
-					if (typingInterval) clearInterval(typingInterval);
-					// Final message with full html
-					messages = messages.map((m, idx) =>
-						idx === messages.length - 1 ? { ...m, text: plainReply, html: fullHtml } : m
-					);
-					isBusy = false;
-					scrollToBottom();
+			const contentType = res.headers.get('Content-Type') || '';
+
+			if (contentType.includes('text/event-stream') && res.body) {
+				// Streaming SSE response
+				const reader = res.body.getReader();
+				const decoder = new TextDecoder();
+				let fullText = '';
+				let buffer = '';
+
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) break;
+
+					buffer += decoder.decode(value, { stream: true });
+					const lines = buffer.split('\n');
+					// Keep the last potentially incomplete line in the buffer
+					buffer = lines.pop() || '';
+
+					for (const line of lines) {
+						if (!line.startsWith('data: ')) continue;
+						const data = line.slice(6).trim();
+						if (data === '[DONE]') continue;
+
+						try {
+							const chunk = JSON.parse(data);
+							const delta = chunk.choices?.[0]?.delta?.content;
+							if (delta) {
+								fullText += delta;
+								const html = renderMarkdown(fullText);
+								messages = messages.map((m, idx) =>
+									idx === messages.length - 1 ? { ...m, text: fullText, html } : m
+								);
+								scrollToBottom();
+							}
+						} catch {
+							// skip malformed chunks
+						}
+					}
 				}
-			}, 18);
-		}, delay);
+
+				// Final update
+				const finalHtml = renderMarkdown(fullText);
+				messages = messages.map((m, idx) =>
+					idx === messages.length - 1 ? { ...m, text: fullText, html: finalHtml } : m
+				);
+			} else {
+				// Non-streaming JSON response
+				const json = await res.json();
+				const reply = json.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+				const html = renderMarkdown(reply);
+				messages = messages.map((m, idx) =>
+					idx === messages.length - 1 ? { ...m, text: reply, html } : m
+				);
+			}
+		} catch (err: any) {
+			showTyping = false;
+			if (err.name !== 'AbortError') {
+				const errorText = "Something went wrong. Please try again.";
+				messages = [...messages, { role: 'assistant', text: errorText, html: `<p>${errorText}</p>` }];
+			}
+		} finally {
+			isBusy = false;
+			abortController = null;
+			scrollToBottom();
+		}
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -107,8 +184,7 @@
 		document.documentElement.style.setProperty('overflow-y', 'auto', 'important');
 
 		return () => {
-			if (typingTimeout) clearTimeout(typingTimeout);
-			if (typingInterval) clearInterval(typingInterval);
+			if (abortController) abortController.abort();
 			// Restore hidden overflow for the chat app
 			document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
 		};

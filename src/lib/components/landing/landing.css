@@ -202,7 +202,7 @@
 
 .landing .partner-banner-logo--manifest {
   height: 51px;
-  max-width: 306px;
+  max-width: 352px;
 }
 
 /* Morpheus: wordmark on top, green square logo below */
@@ -497,6 +497,35 @@
   font-weight: 600;
 }
 
+/* CTA button inside chat bubbles */
+.landing .message-bubble .landing-cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 180, 216, 0.3);
+}
+
+.landing .landing-cta-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 180, 216, 0.45);
+  background: linear-gradient(135deg, #00c4e8, #0087c6);
+}
+
+.landing .landing-cta-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 180, 216, 0.25);
+}
+
 .landing .typing-indicator {
   display: flex;
   gap: 4px;
@@ -759,7 +788,7 @@
 
   .landing .partner-banner-logo--manifest {
     height: 37px;
-    max-width: 238px;
+    max-width: 274px;
   }
 
   .landing .partners-roles {
@@ -840,7 +869,7 @@
   }
 
   .landing .landing-partners-mobile-logo--manifest {
-    height: 32px;
+    height: 37px;
     filter: none;
   }
 

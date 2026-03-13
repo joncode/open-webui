@@ -40,6 +40,7 @@
 
 	export let className = 'max-w-[240px]';
 	export let align = 'end';
+	export let side: 'top' | 'bottom' = 'top';
 
 	export let showActiveUsers = true;
 
@@ -86,9 +87,9 @@
 
 	<slot name="content">
 		<DropdownMenu.Content
-			class="w-full {className}  rounded-2xl px-1 py-1  border border-gray-100  dark:border-gray-800 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg text-sm"
+			class="w-full {className}  rounded-2xl px-1 py-1  border border-gray-100  dark:border-gray-800 z-[200] bg-white dark:bg-gray-850 dark:text-white shadow-lg text-sm"
 			sideOffset={4}
-			side="top"
+			{side}
 			{align}
 			transition={(e) => fade(e, { duration: 100 })}
 		>
@@ -128,75 +129,6 @@
 						</div>
 					</div>
 				</div>
-
-				{#if $user?.status_emoji || $user?.status_message}
-					<div class="mx-1">
-						<button
-							class="mb-1 w-full gap-2 px-2.5 py-1.5 rounded-xl bg-gray-50 dark:text-white dark:bg-gray-900/50 text-black transition text-xs flex items-center"
-							type="button"
-							on:click={() => {
-								show = false;
-								showUserStatusModal = true;
-							}}
-						>
-							{#if $user?.status_emoji}
-								<div class=" self-center shrink-0">
-									<Emoji className="size-4" shortCode={$user?.status_emoji} />
-								</div>
-							{/if}
-
-							<Tooltip
-								content={$user?.status_message}
-								className=" self-center line-clamp-2 flex-1 text-left"
-							>
-								{$user?.status_message}
-							</Tooltip>
-
-							<div class="self-start">
-								<Tooltip content={$i18n.t('Clear status')}>
-									<button
-										type="button"
-										on:click={async (e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											e.stopImmediatePropagation();
-
-											const res = await updateUserStatus(localStorage.token, {
-												status_emoji: '',
-												status_message: ''
-											});
-
-											if (res) {
-												toast.success($i18n.t('Status cleared successfully'));
-												user.set(await getSessionUser(localStorage.token));
-											} else {
-												toast.error($i18n.t('Failed to clear status'));
-											}
-										}}
-									>
-										<XMark className="size-4 opacity-50" strokeWidth="2" />
-									</button>
-								</Tooltip>
-							</div>
-						</button>
-					</div>
-				{:else}
-					<div class="mx-1">
-						<button
-							class="mb-1 w-full px-3 py-1.5 gap-1 rounded-xl bg-gray-50 dark:text-white dark:bg-gray-900/50 text-black transition text-xs flex items-center justify-center"
-							type="button"
-							on:click={() => {
-								show = false;
-								showUserStatusModal = true;
-							}}
-						>
-							<div class=" self-center">
-								<FaceSmile className="size-4" strokeWidth="1.5" />
-							</div>
-							<div class=" self-center truncate">{$i18n.t('Update your status')}</div>
-						</button>
-					</div>
-				{/if}
 
 				<hr class=" border-gray-50/30 dark:border-gray-800/30 my-1.5 p-0" />
 			{/if}
@@ -283,43 +215,6 @@
 				<hr class=" border-gray-50/30 dark:border-gray-800/30 my-1 p-0" />
 
 				<!-- {$i18n.t('Help')} -->
-
-				{#if $user?.role === 'admin'}
-					<DropdownMenu.Item
-						as="a"
-						href="https://docs.openwebui.com"
-						target="_blank"
-						draggable="false"
-						class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
-						id="chat-share-button"
-						on:click={() => {
-							show = false;
-						}}
-					>
-						<div class=" self-center mr-3">
-							<QuestionMarkCircle className="size-5" />
-						</div>
-						<div class=" self-center truncate">{$i18n.t('Documentation')}</div>
-					</DropdownMenu.Item>
-
-					<!-- Releases -->
-					<DropdownMenu.Item
-						as="a"
-						href="https://github.com/open-webui/open-webui/releases"
-						target="_blank"
-						draggable="false"
-						class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
-						id="chat-share-button"
-						on:click={() => {
-							show = false;
-						}}
-					>
-						<div class=" self-center mr-3">
-							<Map className="size-5" />
-						</div>
-						<div class=" self-center truncate">{$i18n.t('Releases')}</div>
-					</DropdownMenu.Item>
-				{/if}
 
 				<DropdownMenu.Item
 					class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
