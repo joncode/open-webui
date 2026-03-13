@@ -683,6 +683,10 @@
 								class="mt-4 px-6 py-3 bg-white dark:bg-white hover:bg-gray-100 dark:hover:bg-gray-200 text-gray-900 rounded-xl text-base font-medium transition flex items-center gap-2 shadow-sm"
 								on:click={async () => {
 									const res = await createNoteHandler(dayjs().format('YYYY-MM-DD'));
+
+									if (res) {
+										goto(`/notes/${res.id}`);
+									}
 								}}
 							>
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
