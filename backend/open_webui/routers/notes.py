@@ -108,6 +108,7 @@ async def search_notes(
     order_by: Optional[str] = None,
     direction: Optional[str] = None,
     page: Optional[int] = 1,
+    scope: Optional[str] = "mine",
     user=Depends(get_verified_user),
     db: Session = Depends(get_session),
 ):
@@ -137,7 +138,15 @@ async def search_notes(
     if direction:
         filter["direction"] = direction
 
-    if not user.role == "admin" or not BYPASS_ADMIN_ACCESS_CONTROL:
+    # Admins default to seeing only their own notes (scope="mine").
+    # They can opt-in to see all users' notes with scope="all".
+    show_all = (
+        user.role == "admin"
+        and BYPASS_ADMIN_ACCESS_CONTROL
+        and scope == "all"
+    )
+
+    if not show_all:
         groups = Groups.get_groups_by_member_id(user.id, db=db)
         if groups:
             filter["group_ids"] = [group.id for group in groups]

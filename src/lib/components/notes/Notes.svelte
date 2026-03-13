@@ -72,6 +72,7 @@
 	let displayOption = null;
 	let viewOption = null;
 	let permission = null;
+	let scope = 'mine';
 
 	let page = 1;
 
@@ -187,7 +188,7 @@
 		}, 300);
 	}
 
-	$: if (loaded && sortKey !== undefined && permission !== undefined && viewOption !== undefined) {
+	$: if (loaded && sortKey !== undefined && permission !== undefined && viewOption !== undefined && scope !== undefined) {
 		init();
 	}
 
@@ -204,7 +205,8 @@
 			viewOption,
 			permission,
 			sortKey,
-			page
+			page,
+			scope
 		).catch(() => {
 			return [];
 		});
@@ -291,6 +293,7 @@
 	onMount(() => {
 		viewOption = localStorage?.noteViewOption ?? null;
 		displayOption = localStorage?.noteDisplayOption ?? null;
+		scope = localStorage?.noteScopeOption ?? 'mine';
 
 		loaded = true;
 
@@ -433,6 +436,25 @@
 									{ value: null, label: $i18n.t('Write') },
 									{ value: 'read_only', label: $i18n.t('Read Only') }
 								]}
+							/>
+						{/if}
+
+						{#if $user?.role === 'admin'}
+							<DropdownOptions
+								align="start"
+								className="flex w-full items-center gap-2 truncate px-3 py-1.5 text-sm bg-gray-50 dark:bg-gray-850 rounded-xl placeholder-gray-400 outline-hidden focus:outline-hidden"
+								bind:value={scope}
+								items={[
+									{ value: 'mine', label: $i18n.t('My Notes') },
+									{ value: 'all', label: $i18n.t('All Users') }
+								]}
+								onChange={(value) => {
+									if (value) {
+										localStorage.noteScopeOption = value;
+									} else {
+										delete localStorage.noteScopeOption;
+									}
+								}}
 							/>
 						{/if}
 					</div>

@@ -97,7 +97,8 @@ export const searchNotes = async (
 	viewOption: string | null = null,
 	permission: string | null = null,
 	sortKey: string | null = null,
-	page: number | null = null
+	page: number | null = null,
+	scope: string = 'mine'
 ) => {
 	let error = null;
 	const searchParams = new URLSearchParams();
@@ -120,6 +121,10 @@ export const searchNotes = async (
 
 	if (page !== null) {
 		searchParams.append('page', `${page}`);
+	}
+
+	if (scope) {
+		searchParams.append('scope', scope);
 	}
 
 	const res = await fetch(`${WEBUI_API_BASE_URL}/notes/search?${searchParams.toString()}`, {
